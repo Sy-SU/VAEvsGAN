@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A comparative reading report on Gaussian mixture models, VAEs, GANs, and diffusion models.">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0d151f" media="(prefers-color-scheme: dark)">
+  <title>From Traditional Generative Models to VAEs, GANs, and Diffusion Models</title>
+  <link rel="stylesheet" href="assets/homepage.css">
+  <script>
+    window.MathJax = {
+      tex: {inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], tags: 'ams'},
+      options: {skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']}
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"><span></span></div>
+  <header class="site-header">
+    <a class="brand" href="#report-title" aria-label="Back to the report title">
+      <span class="brand-mark">V/G</span>
+      <span>VAE vs GAN</span>
+    </a>
+    <nav class="header-links" aria-label="Page links">
+      <div class="language-switch" role="group" aria-label="Language">
+        <button type="button" data-language="en" aria-pressed="true">EN</button>
+        <span aria-hidden="true">/</span>
+        <button type="button" data-language="zh" aria-pressed="false">中文</button>
+      </div>
+      <a class="markdown-link" href="report.en.md">Markdown</a>
+      <a class="github-link" href="https://github.com/Sy-SU/VAEvsGAN" target="_blank" rel="noreferrer">GitHub ↗</a>
+    </nav>
+  </header>
+
+  <div class="page-shell">
+    <aside class="toc" aria-label="Report contents">
+      <p class="toc-label">Contents</p>
+      <nav class="toc-content"><a class="toc-section" href="#sec:background">Research Question and Background</a>
+<a class="toc-section" href="#sec:foundations">Fundamental Concepts and Theory</a>
+<a class="toc-sub" href="#subsec:distributions-and-classification">Joint and Conditional Distributions in Classification</a>
+<a class="toc-sub" href="#subsec:maximum-likelihood">Maximum-Likelihood Estimation</a>
+<a class="toc-sub" href="#subsec:variational-inference">Variational Inference and the Evidence Lower Bound</a>
+<a class="toc-sub" href="#subsec:meaning-of-distribution-modeling">What It Means to Model Conditional and Joint Distributions</a>
+<a class="toc-section" href="#sec:methods">Representative Methods and Their Mathematical Principles</a>
+<a class="toc-sub" href="#subsec:gmm">Gaussian Mixture Models</a>
+<a class="toc-sub" href="#subsec:vae">Variational Autoencoders</a>
+<a class="toc-sub" href="#subsec:gan">Generative Adversarial Networks</a>
+<a class="toc-sub" href="#subsec:diffusion">Diffusion Models</a>
+<a class="toc-section" href="#sec:literature-review">Analysis of Representative Literature</a>
+<a class="toc-sub" href="#subsec:paper-aevb">Auto-Encoding Variational Bayes</a>
+<a class="toc-sub" href="#subsec:paper-gan">Generative Adversarial Networks</a>
+<a class="toc-sub" href="#subsec:paper-ddpm">Denoising Diffusion Probabilistic Models</a>
+<a class="toc-sub" href="#subsec:paper-ddim">Denoising Diffusion Implicit Models</a>
+<a class="toc-section" href="#sec:comparison">Comparison of Methods</a>
+<a class="toc-section" href="#sec:experiments">Experimental Validation</a>
+<a class="toc-sub" href="#subsec:experiment-setup">Objective and Setup</a>
+<a class="toc-sub" href="#subsec:experiment-progress">Training Progress</a>
+<a class="toc-sub" href="#subsec:experiment-samples">Samples Under the Same Condition</a>
+<a class="toc-section" href="#sec:limitations">Limitations of Existing Methods</a>
+<a class="toc-section" href="#sec:research-directions">Reflections and Possible Research Directions</a>
+<a class="toc-section" href="#sec:conclusion">Conclusion</a>
+<a class="toc-section" href="#sec:ai-tool-use">Statement on the Use of Generative AI Tools</a>
+<a class="toc-section" href="#references">References</a></nav>
+    </aside>
+
+    <main>
+      <article class="report-content"><h1 id="report-title">From Traditional Generative Models to VAEs, GANs, and Diffusion Models</h1>
+<h2 id="sec:background">Research Question and Background</h2>
+<p>Pattern recognition studies how to extract regularities from observed data and use them for classification, recognition, and prediction. In image classification, for example, a model may learn the relationship between images and classes directly, or it may first learn the distribution of images and then make decisions probabilistically. The latter reflects the central idea of generative modeling: a model learns the statistical process that gives rise to data in order to understand relationships among samples<sup class="citation"><a href="#ref-1">[1]</a></sup>. Real-world data are high-dimensional, complex, and diverse. Images in the same class may differ substantially in pose, illumination, and background, while images from different classes may share visual features. Describing these variations from a finite sample is a fundamental challenge for generative modeling.</p>
+<p>Several model families approach this distribution-learning problem differently. Traditional generative models such as Gaussian mixture models (GMMs) represent data through an interpretable mixture of probability distributions, making parameter estimation and latent-variable inference relatively transparent. Variational autoencoders (VAEs) combine latent-variable models with neural networks. Generative adversarial networks (GANs) train a generator through adversarial learning, whereas diffusion models such as DDPM learn to recover data progressively from noise.</p>
+<p>This report first reviews the foundational concepts of joint distributions, maximum-likelihood estimation, and variational inference. It then examines the mathematical basis of GMMs, VAEs, GANs, and diffusion models, and discusses the contributions and limitations of representative work including AEVB, GAN, DDPM, and DDIM. Finally, a controlled MNIST experiment compares a VAE with a DCGAN, providing qualitative evidence for the observation that VAE samples tend to be smooth and may lack fine detail. The possible causes are considered in relation to each model's objective and output formulation.</p>
+<h2 id="sec:foundations">Fundamental Concepts and Theory</h2>
+<h3 id="subsec:distributions-and-classification">Joint and Conditional Distributions in Classification</h3>
+<p>Let \(x\) denote an observation and \(y\) a class label. Their joint distribution can be factorized as</p>
+<a id="eq:joint-distribution"></a>
+<div class="math-display">\[p(x,y)=p(y)p(x\mid y)=p(x)p(y\mid x).
+\tag{1}\]</div>
+<p>Here, \(p(y)\) is the class prior; \(p(x\mid y)\) describes the distribution of observations for a given class; \(p(x,y)\) describes inputs and classes jointly; and \(p(y\mid x)\) is the posterior probability of each class after an input has been observed.</p>
+<p>For discrete classes, Bayes' rule gives</p>
+<a id="eq:bayes-rule"></a>
+<div class="math-display">\[p(y\mid x)
+=
+\frac{p(x\mid y)p(y)}
+{\sum_{y'}p(x\mid y')p(y')}.
+\tag{2}\]</div>
+<p>A generative classifier can first learn the class prior and class-conditional distributions, then classify with Equation <a href="#eq:bayes-rule">(2)</a><sup class="citation"><a href="#ref-1">[1]</a></sup>.</p>
+<h3 id="subsec:maximum-likelihood">Maximum-Likelihood Estimation</h3>
+<p>Let the training set be \(\mathcal D=\{x^{(1)},\ldots,x^{(N)}\}\), with independent and identically distributed samples, and let \(p_\theta(x)\) be a probabilistic model parameterized by \(\theta\). Treating the data as observed, the likelihood is</p>
+<a id="eq:likelihood"></a>
+<div class="math-display">\[L(\theta;\mathcal D)=\prod_{i=1}^{N}p_\theta(x^{(i)}).
+\tag{3}\]</div>
+<p>Maximum-likelihood estimation chooses parameters that assign the greatest probability or probability density to the observations. Because the logarithm is monotonic, the product can be converted into a sum, yielding the equivalent objective</p>
+<a id="eq:maximum-likelihood"></a>
+<div class="math-display">\[\hat\theta_{\mathrm{ML}}
+=\arg\max_\theta \log L(\theta;\mathcal D)
+=\arg\max_\theta\sum_{i=1}^{N}\log p_\theta(x^{(i)}).
+\tag{4}\]</div>
+<p>Here, \(N\) is the number of samples. In practice, minimizing the negative log-likelihood is equivalent to maximizing the log-likelihood<sup class="citation"><a href="#ref-1">[1]</a></sup>.</p>
+<h3 id="subsec:variational-inference">Variational Inference and the Evidence Lower Bound</h3>
+<p>In a latent-variable model, the marginal likelihood \(p_\theta(x)\), also called the evidence, is often difficult to compute directly; the true posterior \(p_\theta(z\mid x)\) can likewise be intractable. Variational inference approximates the true posterior with a distribution \(q_\phi(z\mid x)\) and defines the evidence lower bound (ELBO) as</p>
+<a id="eq:elbo-definition"></a>
+<div class="math-display">\[\mathcal L_{\mathrm{ELBO}}(x)
+=\mathbb E_{z\sim q_\phi(z\mid x)}
+\left[\log\frac{p_\theta(x,z)}{q_\phi(z\mid x)}\right].
+\tag{5}\]</div>
+<p>Here, \(z\) is the latent variable and \(p_\theta(x,z)\) is the joint distribution. The bound and the log evidence satisfy</p>
+<a id="eq:elbo-decomposition"></a>
+<div class="math-display">\[\log p_\theta(x)
+=\mathcal L_{\mathrm{ELBO}}(x)
++D_{\mathrm{KL}}\!\left(q_\phi(z\mid x)\,\|\,p_\theta(z\mid x)\right).
+\tag{6}\]</div>
+<p>The KL divergence measures the discrepancy between two distributions and is non-negative, so the ELBO cannot exceed the log evidence; equality holds when the two posteriors coincide. Maximizing the ELBO makes it possible to learn the model and approximate posterior jointly, providing a tractable objective for models such as VAEs<sup class="citation"><a href="#ref-2">[2]</a></sup>.</p>
+<h3 id="subsec:meaning-of-distribution-modeling">What It Means to Model Conditional and Joint Distributions</h3>
+<p>In the discussion below, \(x\) denotes an observation and \(y\) denotes a class label.</p>
+<p><strong>Modeling \(p(y\mid x)\) means representing uncertainty over classes after an input is given.</strong> For a fixed input \(x\), the model distributes probability across the possible classes, and these probabilities sum to one. Cross-entropy training, for example, learns this distribution by increasing the conditional probability of the true label in the training data; classification then selects the class with the largest posterior probability. The model primarily answers how a known input should be classified and is therefore discriminative.</p>
+<p><strong>Modeling \(p(x\mid y)\) means representing variation in the data for a given class.</strong> For a fixed class \(y\), the model describes possible input values and their relative likelihoods, so each class defines a distribution over \(x\). Conditional maximum-likelihood training raises the probability or density of every observation under its class. Sampling from the model then generates new data for a specified class.</p>
+<p><strong>Modeling \(p(x,y)\) means representing the joint distribution of inputs and classes.</strong> According to Equation <a href="#eq:joint-distribution">(1)</a>, the joint distribution can be factorized as \(p(y)p(x\mid y)\): first sample a class from the prior \(p(y)\), then sample an observation from the corresponding class-conditional distribution \(p(x\mid y)\), producing an \((x,y)\) pair. The same joint distribution can also be written as \(p(x)p(y\mid x)\). Summing over \(y\) yields the input marginal \(p(x)=\sum_y p(x,y)\); conditioning the joint distribution yields the posterior \(p(y\mid x)\) used for classification. A joint model therefore contains information about \(x\), \(y\), and their statistical relationship.</p>
+<p>These distributions are connected by the product rule and Bayes' rule, but converting one conditional distribution into another also requires the appropriate marginal distribution. The same \(p(y\mid x)\), for instance, can be paired with different \(p(x)\) distributions to form different joint distributions. Learning the classifier \(p(y\mid x)\) alone therefore does not mean that the input distribution has also been learned. Conversely, \(p(x\mid y)\) together with \(p(y)\) determines \(p(x,y)\), from which \(p(y\mid x)\) can be derived. Discriminative modeling focuses on class prediction; generative modeling must additionally represent the data distribution, often requiring density estimation, marginalization, or sampling.</p>
+<h2 id="sec:methods">Representative Methods and Their Mathematical Principles</h2>
+<p>The objective of a generative model is to learn the distribution of the training data and produce new samples with similar characteristics. The main differences among methods lie in how they represent the data distribution and how they turn randomness into structured data.</p>
+<h3 id="subsec:gmm">Gaussian Mixture Models</h3>
+<p>A Gaussian mixture model (GMM) represents data with a weighted combination of Gaussian distributions. Intuitively, one Gaussian can describe observations concentrated around a single center; when the data contain several groups, several distributions can be combined:</p>
+<a id="eq:gmm-density"></a>
+<div class="math-display">\[p(x)=\sum_{k=1}^{K}\pi_k\mathcal N(x;\mu_k,\Sigma_k).
+\tag{7}\]</div>
+<p>Here, \(x\) is an observation, \(K\) is the number of components, and \(\mu_k\) and \(\Sigma_k\) control the center and spread of component \(k\). The weights \(\pi_k\) are non-negative and sum to one. To generate a sample, the model first selects a component according to the mixture weights and then samples from that Gaussian; the selected component index is a discrete latent variable<sup class="citation"><a href="#ref-1">[1]</a></sup>.</p>
+<p>GMM parameters are commonly estimated by expectation-maximization (EM). The E-step computes the probability that each sample belongs to each component. The M-step uses these probabilities as weights to update the means, covariances, and mixture coefficients. Alternating the two steps progressively improves the fit to the data<sup class="citation"><a href="#ref-3">[3]</a></sup>.</p>
+<p>GMMs have a clear structure and are useful for clustering and density estimation. For complex high-dimensional data such as images, however, they often require many components, increasing both the number of parameters and the difficulty of estimation.</p>
+<h3 id="subsec:vae">Variational Autoencoders</h3>
+<p>A variational autoencoder (VAE) assumes that data are generated from a continuous latent variable \(z\) and uses neural networks to describe this process. The latent variable can be understood as a compressed representation that retains the information needed to generate a sample. A standard Gaussian is typically used as the prior \(p(z)\), while the decoder defines the conditional distribution \(p_\theta(x\mid z)\) from which data are generated.</p>
+<p>Training also requires an encoder that estimates a latent distribution from an input. Because the true posterior is usually intractable, the encoder approximates it with \(q_\phi(z\mid x)\), commonly outputting the mean and variance of a Gaussian. A latent code is sampled from this distribution and passed to the decoder to reconstruct the input. The parameters \(\phi\) and \(\theta\) belong to the encoder and decoder, respectively. Because the encoder returns a distribution rather than a fixed code, the same input can correspond to different latent samples.</p>
+<p>A VAE is trained by maximizing the ELBO:</p>
+<a id="eq:vae-elbo"></a>
+<div class="math-display">\[\mathcal L_{\mathrm{ELBO}}(x)
+=
+\mathbb E_{z\sim q_\phi(z\mid x)}[\log p_\theta(x\mid z)]
+-
+D_{\mathrm{KL}}\!\left(q_\phi(z\mid x)\,\|\,p(z)\right)
+\leq \log p_\theta(x).
+\tag{8}\]</div>
+<p>The expectation averages over latent samples. The first term encourages the decoder to reconstruct the input accurately; the second measures, through KL divergence, how far the approximate posterior departs from the prior. Together they constrain the latent space so that it both preserves information about a sample and remains amenable to sampling from the prior.</p>
+<p>To make sampling compatible with backpropagation, VAEs use the reparameterization trick: independent standard Gaussian noise is sampled first, then scaled by the encoder's predicted standard deviation and shifted by its predicted mean. This formulation allows gradients to propagate back through the encoder.</p>
+<p>New samples can be produced simply by sampling from the prior and passing the result to the decoder. Classical image VAEs often produce smooth outputs and may lose fine detail.</p>
+<h3 id="subsec:gan">Generative Adversarial Networks</h3>
+<p>A generative adversarial network (GAN) learns to generate data through competition between two networks. The generator \(G\) receives random noise \(z\) drawn from a simple prior \(p(z)\) and outputs a sample \(G(z)\). The discriminator \(D\) receives either a real or generated sample and estimates the probability that it came from the real data. The generator tries to make its samples more realistic, while the discriminator tries to distinguish real from fake.</p>
+<p>The original GAN objective is</p>
+<a id="eq:gan-objective"></a>
+<div class="math-display">\[\min_G\max_D
+\left\{
+\mathbb E_{x\sim p_{\mathrm{data}}}[\log D(x)]
++
+\mathbb E_{z\sim p(z)}[\log(1-D(G(z)))]
+\right\}.
+\tag{9}\]</div>
+<p>Here, \(p_{\mathrm{data}}\) is the real-data distribution. The two expectations average over real samples and random noise, respectively. The discriminator maximizes the objective by assigning high scores to real samples and low scores to generated ones. The generator minimizes it by trying to make generated samples receive higher scores. The two networks are updated alternately, so the discriminator provides a continually evolving learning signal for the generator.</p>
+<p>In the ideal case, the generated and real distributions coincide, and the optimal discriminator assigns both classes a probability of one half. Training does not necessarily reach this equilibrium. A GAN need not explicitly evaluate the probability density of generated data and is therefore an implicit generative model; after training, only the generator is required for sampling.</p>
+<p>GANs often produce sharp images, but the two networks influence one another and training can oscillate. Mode collapse may also occur, causing the generator to repeat a small set of similar samples while missing other modes of the real distribution. Visually convincing images therefore do not by themselves show that the model has learned the diversity of the data.</p>
+<h3 id="subsec:diffusion">Diffusion Models</h3>
+<p>Diffusion models decompose generation into a sequence of denoising steps. During training, Gaussian noise is progressively added to real data until the original structure is obscured, and a neural network learns how to denoise inputs at different noise levels. Generation begins with random noise and gradually produces a structured sample<sup class="citation"><a href="#ref-4">[4]</a></sup>.</p>
+<p>Let \(x_0\) be an original sample and \(\beta_t\) the noise intensity at step \(t\). Define \(\alpha_t=1-\beta_t\) and \(\bar\alpha_t=\prod_{s=1}^{t}\alpha_s\). A noisy sample at any time step can be computed directly as</p>
+<a id="eq:diffusion-forward"></a>
+<div class="math-display">\[x_t=\sqrt{\bar\alpha_t}\,x_0+\sqrt{1-\bar\alpha_t}\,\epsilon,
+\qquad \epsilon\sim\mathcal N(0,I).
+\tag{10}\]</div>
+<p>Here, \(\epsilon\) is standard Gaussian noise, \(I\) is the identity matrix, and \(\bar\alpha_t\) is the proportion of the original signal that remains. As \(t\) increases, the signal contribution decreases and the noise contribution increases. When the final signal contribution is sufficiently small, the sample distribution approaches a standard Gaussian. The noising rule is fixed in advance and does not need to be learned; a training input \(x_t\) can also be obtained directly without executing every preceding noising step.</p>
+<p>The network learns the reverse task: denoising. A common formulation gives the network \(x_t\) and \(t\), asks it to predict the added noise \(\epsilon_\theta(x_t,t)\), and minimizes the simplified objective</p>
+<a id="eq:diffusion-noise-loss"></a>
+<div class="math-display">\[\mathcal L_{\mathrm{simple}}(\theta)
+=
+\mathbb E_{x_0,t,\epsilon}
+\left[\left\|\epsilon-\epsilon_\theta(x_t,t)\right\|_2^2\right].
+\tag{11}\]</div>
+<p>Here, \(\theta\) denotes the network parameters, and the squared norm measures the error between the predicted and actual noise. During training, a data sample and a time step are selected, Gaussian noise is generated, and a noisy input is constructed. One network can therefore learn recovery rules across many noise levels, with the time step indicating the current degree of corruption.</p>
+<p>At generation time, the process starts from standard Gaussian noise and repeatedly updates the sample according to the network prediction and a prescribed sampling rule, lowering the noise level until a final output is obtained. The model synthesizes a new sample from patterns learned in the training data; it does not recover a particular training example.</p>
+<p>The noise-prediction objective is comparatively direct, and diffusion models can often balance sample quality with diversity. Conventional sampling, however, calls the network repeatedly and is slow. Training and inference are computationally expensive, so the number of sampling steps, output quality, and efficiency must be balanced.</p>
+<h2 id="sec:literature-review">Analysis of Representative Literature</h2>
+<p>VAEs, GANs, and diffusion models embody distinct approaches to deep generative modeling. Kingma and Welling's <em>Auto-Encoding Variational Bayes</em> combines variational inference with deep neural networks, enabling continuous latent-variable models to be trained end to end with stochastic gradients<sup class="citation"><a href="#ref-5">[5]</a></sup>. Goodfellow et al.'s GAN avoids explicit density modeling and learns through competition between a generator and a discriminator<sup class="citation"><a href="#ref-6">[6]</a></sup>. DDPM later recasts generation as an iterative process that restores data from noise<sup class="citation"><a href="#ref-7">[7]</a></sup>, while DDIM redesigns the sampling process to address the slow generation of diffusion models<sup class="citation"><a href="#ref-8">[8]</a></sup>. Together, these four papers represent influential approaches based on latent-variable modeling, adversarial learning, and iterative generation.</p>
+<h3 id="subsec:paper-aevb">Auto-Encoding Variational Bayes</h3>
+<p>In <em>Auto-Encoding Variational Bayes</em>, Kingma and Welling present a scalable learning and inference method for generative models with continuous latent variables, establishing the framework now widely known as the variational autoencoder (VAE)<sup class="citation"><a href="#ref-5">[5]</a></sup>. The paper is not merely concerned with a new neural-network architecture; its central question is how probabilistic generative models containing continuous latent variables can be trained efficiently on large datasets.</p>
+<p>Traditional latent-variable models assume that observations arise from hidden factors and use those variables to explain how the data are produced. A face image, for example, contains many pixels, but those pixels may be governed by more compact factors such as identity, pose, expression, and illumination. A generative model seeks to describe both the distribution of those factors and the way they produce observed data. For complex observations and generative processes, however, inferring latent variables from data is often difficult and the true posterior is usually intractable. Classical variational inference may require a separate optimization for every sample, making it difficult to scale directly to large datasets and deep neural networks.</p>
+<p>A central design in <em>Auto-Encoding Variational Bayes</em> is a neural network dedicated to inference. For any input sample, the network directly predicts the parameters of its latent distribution instead of running a separate optimization. This network is now called the encoder, while the generative network that maps latent variables to data is called the decoder. A VAE can therefore be viewed as the combination of an inference model and a generative model.</p>
+<p>The encoder differs fundamentally from the encoder in a conventional autoencoder. A standard autoencoder usually compresses an input into a deterministic low-dimensional vector and asks a decoder to recover the input. A VAE encoder instead estimates a probability distribution over latent variables. The same input corresponds not to one fixed point in latent space but to a probabilistic region. In a common implementation, the encoder outputs the parameters of this distribution, a particular latent variable is sampled, and the decoder uses that sample for generation or reconstruction.</p>
+<p>This design gives the VAE latent space a direct probabilistic interpretation. Rather than memorizing which vector belongs to each example, the model tries to arrange the latent variables for different samples into a continuous global distribution. After training, a new latent value can be drawn from the prescribed prior and passed to the decoder without supplying an input. A VAE thus has two operating modes: during training and reconstruction, data pass through the encoder and decoder; during unconditional generation, the encoder is unnecessary, and samples are drawn directly from the latent space and decoded.</p>
+<p>Figure <a href="#fig:gan-vae-architecture">1</a> contrasts the training and generation structures of GANs and VAEs. Panel (c) shows a VAE trained jointly through its encoder and decoder, while panel (d) shows that generation after training uses only the decoder. The comparison helps distinguish the encoder's inference role from the decoder's generative role.</p>
+<figure id="fig:gan-vae-architecture">
+  <img src="assets/images/GANandVAE.png" alt="Figure 1: Training and generation structures of GANs and VAEs" loading="lazy">
+  <figcaption>Figure 1. Training and generation structures of GANs and VAEs: (a) GAN training; (b) GAN generation; (c) VAE training; and (d) VAE generation.<sup class="citation"><a href="#ref-9">[9]</a></sup></figcaption>
+</figure>
+<p>The reparameterization method introduced in AEVB is what makes this training process practical. Latent variables must be sampled, but an ordinary sampling operation blocks gradient propagation and prevents the encoder from being trained by standard backpropagation. AEVB moves the randomness into an independent noise variable, expressing the latent sample as a differentiable transformation of the encoder output and random noise. Sampling remains stochastic, but the influence of the network parameters on the result becomes differentiable, so the encoder and decoder can be optimized jointly by stochastic gradient descent. The paper uses this idea to construct estimators of the variational lower bound that are compatible with standard stochastic-gradient optimization and thereby enables efficient inference in continuous latent-variable models.</p>
+<p>The VAE training pipeline can be divided into four stages. First, a real sample is passed to the encoder, which estimates a corresponding latent distribution. Second, a latent variable is sampled from that distribution. Third, the latent sample is passed to the decoder to produce an output corresponding to the original data. Finally, the networks are updated according to both the difference between the output and the input and the discrepancy between the latent distribution and the prescribed prior. The first objective requires the model to preserve enough information for reconstruction; the second prevents the latent representations of different samples from scattering arbitrarily and encourages a regular, continuous latent space.</p>
+<p>VAE training is therefore not simply an attempt to compress and restore data as accurately as possible. With a reconstruction objective alone, an encoder could map every training example to an isolated point. Such a model might reconstruct the training set well yet fail to generate a plausible result from a randomly selected location in latent space. Constraining the latent distribution encourages nearby locations to behave continuously, making random sampling and latent interpolation meaningful. This is what turns the VAE from a representation-learning system into a genuine generative model.</p>
+<p>From a generative perspective, the regularities learned by a VAE reside primarily in the decoder and its associated generative model. The encoder answers the inference question, “given the data, what latent variable may have produced them?” The decoder learns the generative relationship, “given a latent variable, what data should be produced?” During training, the encoder finds latent representations associated with real data and supplies useful signals to the decoder. Once training is complete, the encoder is unnecessary if the task is only to generate new samples: a latent variable can be drawn from the prior and decoded directly. The decoder thus maps latent space to data space, while the encoder primarily provides efficient approximate inference.</p>
+<p>The VAE's major advance over classical latent-variable models is its integration of probabilistic generative modeling with deep neural networks. Neural networks provide an expressive mapping from latent variables to complex high-dimensional observations, while the encoder avoids repeatedly solving a difficult optimization problem for each sample and makes minibatch stochastic-gradient training possible. The original paper emphasizes this shared inference network—now commonly called amortized inference—which has become a basic design principle in many later deep latent-variable models.</p>
+<p>VAEs also have clear limitations. The model must balance accurate reconstruction against regularity of the overall latent distribution. If continuity is emphasized too strongly, sample details may be lost; early image VAEs in particular often produce smoother outputs with less fine texture than later GANs and diffusion models. A simple prespecified prior may also be unable to describe the complex latent structure of real data. These issues motivated more flexible latent-variable models and alternative generative paradigms.</p>
+<p>Overall, the principal contribution of <em>Auto-Encoding Variational Bayes</em> is not merely an “encoder plus decoder” architecture, but a method for efficiently training continuous latent-variable generative models with neural networks. The encoder solves approximate posterior inference, the decoder implements data generation, and reparameterization brings stochastic latent variables into ordinary backpropagation. The resulting VAE connects probabilistic modeling, latent representations, and deep learning, marking an important transition from traditional to modern generative models.</p>
+<h3 id="subsec:paper-gan">Generative Adversarial Networks</h3>
+<p>Goodfellow et al. introduced the generative adversarial network (GAN) in 2014<sup class="citation"><a href="#ref-6">[6]</a></sup>, proposing a training strategy different from that of VAEs. Instead of explicitly designing an encoder to approximate a latent posterior, a GAN trains two networks—a generator and a discriminator—through an adversarial process.</p>
+<p>The generator takes random noise as input and maps it to a sample in the same space as the real data. The discriminator receives both real and generated samples and predicts whether each input came from the data or the generator. During training, the discriminator becomes better at separating real from generated data, while the generator improves the realism of its outputs so that they are harder to classify correctly. The original paper formulates this interaction as a two-player minimax game between a generative model and a discriminative model.</p>
+<p>The main difference between GANs and VAEs lies in how they learn. A VAE specifies a latent-variable probabilistic process and uses an encoder for approximate inference. A GAN instead relies on the learning signal supplied by the discriminator to push the generator indirectly toward the real-data distribution. Only the generator is needed at inference time, and it can produce a complete sample directly from random noise without iterative inference.</p>
+<p>Adversarial learning can produce sharp images and has driven major advances in high-quality image generation, but training is sensitive. The generator and discriminator must remain reasonably balanced; if one learns much faster than the other, optimization can become unstable. The generator may also cover only part of the real distribution, a failure known as mode collapse. Much subsequent GAN research has focused on architecture, training stability, and mode coverage.</p>
+<h3 id="subsec:paper-ddpm">Denoising Diffusion Probabilistic Models</h3>
+<p>The Denoising Diffusion Probabilistic Models (DDPM) proposed by Ho, Jain, and Abbeel in 2020 established diffusion probabilistic models as an important direction in deep generative modeling<sup class="citation"><a href="#ref-7">[7]</a></sup>. Unlike a VAE that generates data from a low-dimensional latent variable in one pass, or a GAN that maps random noise directly to data, DDPM expresses generation as a gradual removal of noise.</p>
+<p>DDPM contains two processes that run in opposite directions. The forward process repeatedly adds a small amount of random noise to real data. After enough steps, the original data have been almost completely destroyed and approach pure random noise. This process deliberately constructs a path from the complex real-data distribution to a simple noise distribution.</p>
+<p>The model learns the reverse process: how to turn noisy data into progressively cleaner data. During training, real samples are corrupted to different noise levels, and a neural network learns to estimate the noise they contain. After training, the model can start from a completely random noise sample and apply denoising repeatedly. Global structure, local shape, and detail emerge gradually until the final output resembles a new sample from the training distribution. Ho et al. showed that this iterative denoising approach can generate high-quality images.</p>
+<p>Unlike GANs, DDPM does not train a generator and discriminator adversarially, so optimization is generally more stable and can provide good sample quality and distribution coverage. Its principal drawback is that generation requires many consecutive denoising steps. The network must be evaluated repeatedly for every sample, making sampling much slower than one-pass methods such as GANs.</p>
+<h3 id="subsec:paper-ddim">Denoising Diffusion Implicit Models</h3>
+<p>To address the large number of DDPM sampling steps and the resulting slow generation, Song, Meng, and Ermon proposed Denoising Diffusion Implicit Models (DDIM) in 2020<sup class="citation"><a href="#ref-8">[8]</a></sup>. DDIM does not train an entirely different diffusion model. Instead, it reexamines the relationship between diffusion training and sampling and derives a more flexible reverse-generation procedure.</p>
+<p>Standard DDPM sampling denoises along a long, predefined sequence of time steps. DDIM constructs a non-Markovian forward process with the same conditional marginals as DDPM and derives the corresponding reverse process. The same training objective can then support a much shorter path from noise to data. A pretrained diffusion model can therefore use alternative sampling schedules rather than following every step of the original DDPM reverse chain. The experiments in the paper show that DDIM can substantially reduce sampling time under suitable settings while maintaining good generation quality.</p>
+<p>DDIM can also make generation deterministic: the same initial noise and sampling procedure produce the same output. This property is useful not only for accelerated sampling, but also for latent interpolation and later image-editing applications.</p>
+<p>In summary, DDPM established the basic “progressive noising—learned progressive denoising” framework, while DDIM showed that the return path from noise to data can be redesigned under the same model and training objective to use fewer generation steps. Reducing diffusion sampling cost without sacrificing output quality has since remained an important research direction.</p>
+<h2 id="sec:comparison">Comparison of Methods</h2>
+<p>GMMs, VAEs, GANs, and DDPM all generate new samples by learning a data distribution. They differ primarily in their representation of that distribution, their training objectives, and their trade-offs between generation quality and computational cost. Table 1 compares their classical forms.</p>
+<a id="tab:model-comparison"></a>
+<p><strong>Table 1. Comparison of four classical generative models</strong></p>
+<div class="table-wrap"><table><thead><tr>
+<th><strong>Model</strong></th>
+<th><strong>Representation</strong></th>
+<th><strong>Training</strong></th>
+<th><strong>Main strengths</strong></th>
+<th><strong>Main limitations</strong></th>
+</tr></thead><tbody>
+<tr><td>GMM</td><td>Weighted mixture of Gaussian distributions</td><td>Maximum-likelihood estimation with EM</td><td>Tractable density; interpretable and useful for clustering</td><td>Complex high-dimensional data often require many components</td></tr>
+<tr><td>VAE</td><td>Continuous latent variables with a neural decoder</td><td>Maximization of the ELBO</td><td>Supports representation learning, reconstruction, and generation</td><td>Approximate inference introduces error; image detail can be smooth</td></tr>
+<tr><td>GAN</td><td>Mapping from random noise to data</td><td>Alternating adversarial training of generator and discriminator</td><td>Often produces sharp images; direct sampling</td><td>Training may be unstable and susceptible to mode collapse</td></tr>
+<tr><td>DDPM</td><td>Multi-step reverse denoising</td><td>Prediction of noise at different time steps</td><td>Strong sample quality and diversity</td><td>Repeated network evaluations make sampling expensive</td></tr>
+</tbody></table></div>
+<p>From the perspective of probabilistic representation and inference, a GMM directly defines a mixture density, with a discrete latent variable indicating the component that generated a sample. A VAE uses continuous latent variables to describe data variation and a neural network to define generation. Although a VAE has an explicit probabilistic model, its marginal density is usually intractable, so an encoder approximates the posterior and a likelihood lower bound is optimized. A GAN's generator and noise prior also define a generative distribution, but its density is generally unavailable. DDPM connects noise and data through a sequence of reverse conditional distributions, decomposing generation into many steps.</p>
+<p>Training behavior and output quality also differ. GMM parameter estimation is conceptually direct, although the result depends on the number of components and initialization. A VAE balances reconstruction against regularization of the latent distribution. A GAN uses the discriminator's signal to obtain sharp images, but imbalance between the two networks can destabilize training, and generated samples may concentrate on a few modes. DDPM uses a comparatively direct noise-prediction objective without the balance problem of adversarial training, although its performance still depends on the network, noise schedule, and training resources.</p>
+<p>In terms of sampling efficiency and application, GMMs suit lower-dimensional data with cluster structure and also serve as basic density estimators. VAEs are useful when latent representations, reconstruction, and generation are all required; generation needs only one draw from the prior and one decoder pass. GANs likewise sample directly from a generator and are attractive when visual sharpness and generation speed matter, but their stability and mode coverage require care. DDPM typically spends more computation to obtain strong generation quality and is appropriate when iterative sampling cost is acceptable.</p>
+<h2 id="sec:experiments">Experimental Validation</h2>
+<h3 id="subsec:experiment-setup">Objective and Setup</h3>
+<p>To examine the claim that VAE outputs are often smooth and may lack detail, we conducted a small experiment on the MNIST handwritten-digit dataset and compared the samples of a VAE and a DCGAN. The implementation is available in the <a href="https://github.com/Sy-SU/VAEvsGAN" target="_blank" rel="noreferrer">VAEvsGAN repository</a>, and the main settings are listed in Table <a href="#tab:experiment-settings">2</a>.</p>
+<a id="tab:experiment-settings"></a>
+<p><strong>Table 2. Main training settings for the VAE and DCGAN experiments</strong></p>
+<div class="table-wrap"><table><thead><tr>
+<th><strong>Parameter</strong></th>
+<th><strong>VAE</strong></th>
+<th><strong>DCGAN</strong></th>
+</tr></thead><tbody>
+<tr><td>Epochs</td><td>20</td><td>50</td></tr>
+<tr><td>Batch size</td><td>128</td><td>128</td></tr>
+<tr><td>Latent dimension</td><td>20</td><td>20</td></tr>
+<tr><td>Optimizer</td><td>Adam</td><td>Adam</td></tr>
+<tr><td>Learning rate</td><td>0.001</td><td>0.0002</td></tr>
+<tr><td>Adam momentum parameters</td><td>(0.9, 0.999)</td><td>(0.5, 0.999)</td></tr>
+</tbody></table></div>
+<p>The VAE uses a convolutional encoder and a transposed-convolution decoder. Its loss is the sum of a pixelwise binary cross-entropy reconstruction term and a KL term with weight 1. The DCGAN uses alternating adversarial training with the non-saturating generator loss. The discriminator also treats real images paired with incorrect class labels as negative examples, strengthening the conditional constraint. VAE input pixels are normalized to the range 0 to 1; DCGAN training uses the range -1 to 1. Both are visualized in a common grayscale range of 0 to 1.</p>
+<h3 id="subsec:experiment-progress">Training Progress</h3>
+<p>To observe how the models evolve during training, we fixed both the latent variable and the class condition to the digit “5” and recorded outputs from each model at ten checkpoints. In Figure <a href="#fig:experiment-vae-progress">2</a>, the VAE already forms a continuous outline after the first epoch. The stroke then becomes more concentrated, but a broad grayscale transition remains along its edges. Later outputs visually resemble a “6” more than a “5,” showing that smooth edges and an imperfectly satisfied class condition are separate issues.</p>
+<figure id="fig:experiment-vae-progress">
+  <img src="assets/images/VAE-train-progress.png" alt="Figure 2: VAE training progress" loading="lazy">
+  <figcaption>Figure 2. VAE training progress</figcaption>
+</figure>
+<p>In Figure <a href="#fig:experiment-gan-progress">3</a>, the first-epoch DCGAN result contains disconnected strokes, but a recognizable “5” gradually emerges. Later outputs have strong contrast between strokes and background and relatively clear outlines, although local shapes still vary and a few stray bright pixels remain.</p>
+<figure id="fig:experiment-gan-progress">
+  <img src="assets/images/GAN-train-progress.png" alt="Figure 3: DCGAN training progress" loading="lazy">
+  <figcaption>Figure 3. DCGAN training progress</figcaption>
+</figure>
+<h3 id="subsec:experiment-samples">Samples Under the Same Condition</h3>
+<p>Figure <a href="#fig:experiment-samples">4</a> compares random samples after training. Each model contributes eight images; each column uses numerically identical latent values, and all samples are conditioned on the digit “5.”</p>
+<figure id="fig:experiment-samples">
+  <img src="assets/images/conditional-samples-5.png" alt="Figure 4: Random samples conditioned on the digit 5" loading="lazy">
+  <figcaption>Figure 4. Random samples conditioned on the digit “5”</figcaption>
+</figure>
+<p>The VAE produces coherent strokes, but some edges are soft, local intensities are faint, and several openings and turns are poorly defined. The shapes in columns 3 and 8 are also difficult to recognize as “5.” Most DCGAN samples have sharper outlines, with more distinct upper horizontal strokes and lower curves.</p>
+<p>The code suggests that the smooth VAE outputs may be related both to the output formulation and to KL regularization. The decoder returns Sigmoid probabilities directly without Bernoulli sampling, so uncertain edge pixels appear gray and soften the outline. The KL constraint may additionally remove some detail from the latent representation, contributing to grayscale transitions and a loss of fine structure.</p>
+<h2 id="sec:limitations">Limitations of Existing Methods</h2>
+<p>VAE outputs may have smooth outlines and limited detail. Common implementations use a pixelwise reconstruction objective, but pixel-level fit does not align perfectly with visual quality. Under a Bernoulli likelihood, for example, displaying the decoder's pixel probabilities directly as grayscale values turns intermediate probabilities around edges into smooth intensity transitions. Analysis should therefore distinguish the model's representational capacity from visual effects caused by the output procedure rather than attributing every smooth result to a failure to learn detail<sup class="citation"><a href="#ref-10">[10]</a></sup>.</p>
+<p>A VAE must also balance information preservation against regularization of the latent distribution. The reconstruction term encourages the latent variable to retain enough information to recover the input, while the KL term pushes the approximate posterior toward the prescribed prior. Strong KL regularization may reduce the amount of detailed information kept in the latent representation. Weakening it can improve reconstruction, but does not necessarily improve samples drawn from the prior. Reconstruction ability and generative ability should therefore be evaluated separately; reconstruction error alone is not a sufficient measure of model performance<sup class="citation"><a href="#ref-5">[5]</a></sup>.</p>
+<p>Moreover, the unsupervised VAE objective does not directly require the latent representation to separate classes well. A model that reconstructs inputs accurately does not necessarily preserve the information most useful for classification. In pattern-recognition applications, visual inspection of generated samples or comparison of reconstruction errors remains insufficient for assessing the value of the latent representation. Its performance on real classification tasks must also be evaluated<sup class="citation"><a href="#ref-11">[11]</a></sup>.</p>
+<h2 id="sec:research-directions">Reflections and Possible Research Directions</h2>
+<p>Building on these limitations, future experiments could analyze the specific factors that affect VAE performance and examine the role of its latent representation in classification. These experiments can remain small in scale, compare alternatives through controlled variables, and avoid assuming in advance that any particular modification must improve performance.</p>
+<p>To study insufficient detail in generated images, the latent dimension, KL weight, and output distribution can be held fixed while only the structure or capacity of the decoder changes. Reconstructed images and samples drawn from the prior should be compared separately under the same display procedure. Stroke completeness, edge clarity, and anomalous structures can be considered together with reconstruction error, parameter count, and training time. This experiment would test whether missing detail is associated with decoder capacity and whether a larger model actually produces a corresponding improvement.</p>
+<p>To examine the trade-off between reconstruction and latent-distribution regularization, the original VAE can serve as a baseline while the latent dimension and KL weight are varied one at a time. In addition to recording the reconstruction term and the unweighted KL term, the experiment should compare both reconstructed outputs and prior samples, asking specifically whether better reconstruction also improves generation. This comparison would clarify the relationship between information preservation and distributional regularization and prevent model selection based only on reconstruction error.</p>
+<p>To evaluate the classification value of the latent representation, the encoder can be frozen after VAE training, its predicted latent mean used as a feature vector, and a linear classifier with a fixed architecture trained on top. Classification accuracy and per-class performance can then be compared across VAE settings, with a linear classifier trained directly on raw pixels as a reference. The VAE and classifier should be fitted only on the training set, model settings selected on a validation set, and final performance measured on the real test set. This experiment would test whether models with better reconstruction also learn representations that are more useful for classification, connecting VAE evaluation directly to pattern-recognition tasks.</p>
+<h2 id="sec:conclusion">Conclusion</h2>
+<p>This report examined how generative models learn data distributions. It reviewed joint distributions, maximum-likelihood estimation, and variational inference, then compared the modeling choices of GMMs, VAEs, GANs, and diffusion models. Distinguishing among \(p(y\mid x)\), \(p(x\mid y)\), and \(p(x,y)\) clarifies the different information required for class prediction and data generation. The representative papers further show that different methods make distinct choices in approximate inference, training objectives, and sampling procedures, so their suitability must be judged in terms of generation quality, sample diversity, and computational cost.</p>
+<p>In the MNIST comparison, several VAE samples have softer stroke boundaries, while DCGAN samples generally have sharper outlines. This provides qualitative support, under the present settings, for the observation that VAE outputs are smoother. The code and literature suggest that the visual difference may be influenced jointly by the decoder's output formulation, model capacity, and KL regularization; controlled experiments are still needed to separate their effects. Visual quality, reconstruction ability, and prior-sample quality should therefore be examined independently rather than judging a model from a small number of examples.</p>
+<p>The most important change in my understanding from this reading is a shift from focusing mainly on architecture and headline metrics to first asking what distribution the model learns, what information its objective rewards, and whether that information serves the intended task. For a VAE, lower reconstruction error does not necessarily imply better generation, and strong reconstruction does not guarantee that the latent representation separates classes more effectively. The relationships among objective, generative behavior, and pattern-recognition performance require distinct, task-appropriate evaluations.</p>
+<h2 id="sec:ai-tool-use">Statement on the Use of Generative AI Tools</h2>
+<p>OpenAI Codex was used as an assistive tool while preparing this report. Its role included explanations of concepts in probabilistic modeling, organization of the chapter structure, drafting and revising portions of the text, concision and stylistic editing, checks of formulas and notation, verification of bibliographic metadata, and LaTeX typesetting. Typesetting support included splitting the report into sections, automatic equation numbering, insertion of figures and tables, cross-references, and word counting.</p>
+<p>During the process, I supplied the existing draft, the questions to be discussed, experimental figures, and the code repository, then refined the content through multiple iterations. For the experimental section, the tool assisted in checking model configurations, organizing observations from the figures, and discussing possible explanations. The experimental images were supplied by me, and the analysis was grounded in the code, confirmed settings, and visualized outputs, with a distinction maintained between direct observations and causal claims that still require testing.</p>
+<p>The authors, titles, and publication details in the bibliography were checked against the papers and their official pages. Conceptual explanations and writing suggestions produced by the tool were treated as supporting material. I selected and revised the resulting text in light of the reading and experimental evidence and take responsibility for the final content and arguments of the report.</p>
+<h2 id="references">References</h2>
+<ol class="references">
+<li id="ref-1"><a href="https://link.springer.com/book/9780387310732" target="_blank" rel="noreferrer">BISHOP C M. <em>Pattern Recognition and Machine Learning</em> (M). New York, NY, USA: Springer, 2006.</a></li>
+<li id="ref-2"><a href="https://doi.org/10.1080/01621459.2017.1285773" target="_blank" rel="noreferrer">BLEI D M, KUCUKELBIR A, MCAULIFFE J D. Variational Inference: A Review for Statisticians (J/OL). <em>Journal of the American Statistical Association</em>, 2017, 112(518): 859–877.</a></li>
+<li id="ref-3"><a href="https://doi.org/10.1111/j.2517-6161.1977.tb01600.x" target="_blank" rel="noreferrer">DEMPSTER A P, LAIRD N M, RUBIN D B. Maximum Likelihood from Incomplete Data Via the EM Algorithm (J/OL). <em>Journal of the Royal Statistical Society: Series B (Methodological)</em>, 1977, 39(1): 1–22.</a></li>
+<li id="ref-4"><a href="https://proceedings.mlr.press/v37/sohl-dickstein15.html" target="_blank" rel="noreferrer">SOHL-DICKSTEIN J, WEISS E, MAHESWARANATHAN N, et al. Deep Unsupervised Learning using Nonequilibrium Thermodynamics (C)//<em>Proceedings of the 32nd International Conference on Machine Learning</em>. PMLR, 2015, 37: 2256–2265.</a></li>
+<li id="ref-5"><a href="https://arxiv.org/abs/1312.6114" target="_blank" rel="noreferrer">KINGMA D P, WELLING M. Auto-Encoding Variational Bayes (C)//<em>International Conference on Learning Representations</em>. 2014.</a></li>
+<li id="ref-6"><a href="https://papers.nips.cc/paper_files/paper/2014/hash/f033ed80deb0234979a61f95710dbe25-Abstract.html" target="_blank" rel="noreferrer">GOODFELLOW I J, POUGET-ABADIE J, MIRZA M, et al. Generative Adversarial Nets (C)//<em>Advances in Neural Information Processing Systems</em>. 2014, 27: 2672–2680.</a></li>
+<li id="ref-7"><a href="https://proceedings.neurips.cc/paper/2020/hash/4c5bcfec8584af0d967f1ab10179ca4b-Abstract.html" target="_blank" rel="noreferrer">HO J, JAIN A N, ABBEEL P. Denoising Diffusion Probabilistic Models (C)//<em>Advances in Neural Information Processing Systems</em>. 2020, 33: 6840–6851.</a></li>
+<li id="ref-8"><a href="https://iclr.cc/virtual/2021/poster/2804" target="_blank" rel="noreferrer">SONG J, MENG C, ERMON S. Denoising Diffusion Implicit Models (C)//<em>International Conference on Learning Representations</em>. 2021.</a></li>
+<li id="ref-9"><a href="https://doi.org/10.3390/app10134528" target="_blank" rel="noreferrer">LEE J Y, CHOI S I. Improvement of Learning Stability of Generative Adversarial Network Using Variational Learning (J/OL). <em>Applied Sciences</em>, 2020, 10(13): 4528.</a></li>
+<li id="ref-10"><a href="https://proceedings.mlr.press/v48/larsen16.html" target="_blank" rel="noreferrer">LARSEN A B L, SØNDERBY S K, LAROCHELLE H, et al. Autoencoding beyond pixels using a learned similarity metric (C)//<em>Proceedings of the 33rd International Conference on Machine Learning</em>. PMLR, 2016, 48: 1558–1566.</a></li>
+<li id="ref-11"><a href="https://proceedings.mlr.press/v80/alemi18a.html" target="_blank" rel="noreferrer">ALEMI A, POOLE B, FISCHER I, et al. Fixing a Broken ELBO (C)//<em>Proceedings of the 35th International Conference on Machine Learning</em>. PMLR, 2018, 80: 159–168.</a></li>
+</ol></article>
+      <footer>
+        <span class="footer-label">Pattern Recognition Reading Report</span>
+        <span>·</span>
+        <span class="footer-project">VAEvsGAN Experimental Project</span>
+      </footer>
+    </main>
+  </div>
+
+  <template id="toc-zh"><a class="toc-section" href="#sec:background">研究问题与背景</a>
+<a class="toc-section" href="#sec:foundations">基本概念与理论基础</a>
+<a class="toc-sub" href="#subsec:distributions-and-classification">联合分布、条件分布与分类决策</a>
+<a class="toc-sub" href="#subsec:maximum-likelihood">最大似然估计</a>
+<a class="toc-sub" href="#subsec:variational-inference">变分推断与证据下界</a>
+<a class="toc-sub" href="#subsec:meaning-of-distribution-modeling">建模条件分布与联合分布的含义</a>
+<a class="toc-section" href="#sec:methods">代表性方法及数学原理</a>
+<a class="toc-sub" href="#subsec:gmm">高斯混合模型</a>
+<a class="toc-sub" href="#subsec:vae">变分自编码器</a>
+<a class="toc-sub" href="#subsec:gan">生成对抗网络</a>
+<a class="toc-sub" href="#subsec:diffusion">扩散模型</a>
+<a class="toc-section" href="#sec:literature-review">代表性文献分析</a>
+<a class="toc-sub" href="#subsec:paper-aevb">Auto-Encoding Variational Bayes</a>
+<a class="toc-sub" href="#subsec:paper-gan">Generative Adversarial Networks</a>
+<a class="toc-sub" href="#subsec:paper-ddpm">Denoising Diffusion Probabilistic Models</a>
+<a class="toc-sub" href="#subsec:paper-ddim">Denoising Diffusion Implicit Models</a>
+<a class="toc-section" href="#sec:comparison">不同方法比较</a>
+<a class="toc-section" href="#sec:experiments">实验验证</a>
+<a class="toc-sub" href="#subsec:experiment-setup">实验目的与设置</a>
+<a class="toc-sub" href="#subsec:experiment-progress">训练过程</a>
+<a class="toc-sub" href="#subsec:experiment-samples">同条件生成结果与分析</a>
+<a class="toc-section" href="#sec:limitations">现有方法的局限性</a>
+<a class="toc-section" href="#sec:research-directions">我的思考与可能的研究方向</a>
+<a class="toc-section" href="#sec:conclusion">总结</a>
+<a class="toc-section" href="#sec:ai-tool-use">生成式人工智能工具使用说明</a>
+<a class="toc-section" href="#references">参考文献</a></template>
+  <template id="article-zh"><h1 id="report-title">传统生成模型到 VAE、GAN 和 Diffusion Model 的发展</h1>
+<h2 id="sec:background">研究问题与背景</h2>
+<p>模式识别关注如何从观测数据中提取规律，根据观测到的规律完成分类、识别和预测。以图像分类为例，模型可以先学习图像与类别之间的关系，也可以先学习图像的数据分布，然后根据概率进行判断。后一种思路体现了生成式模型的基本思想：模型通过学习数据产生的统计规律，来理解样本之间的联系<sup class="citation"><a href="#ref-1">[1]</a></sup>。真实数据具有高维、复杂以及多样的特点。同一类别的图像可能在姿态、光照和背景上存在明显差异，不同类别的图像之间可能共享部分视觉特征。如何用有限样本描述这些变化，是生成式建模面临的基本困难。</p>
+<p>如何围绕数据分布建模这一问题，传统的生成模型，例如高斯混合模型（GMM）以较为直观的概率组合来描述数据，便于理解参数估计与隐变量推断；变分自编码器（VAE）将潜变量模型与神经网络结合；生成对抗网络（GAN）通过对抗学习训练生成模型；而以 DDPM 为代表的扩散模型则学习如何从噪声逐步恢复数据。</p>
+<p>基于上述问题，本文先梳理联合分布、最大似然估计和变分推断等基础概念，再分析 GMM、VAE、GAN 与扩散模型的数学依据，并结合 AEVB、GAN、DDPM 和 DDIM 等代表性论文讨论其贡献与局限。最后，我们通过在 MNIST 数据集上开展 VAE 与 DCGAN 的对比实验，对“VAE 生成结果较为平滑、细节可能不足”的判断进行了定性验证，并结合模型的训练目标与输出方式分析其可能原因。</p>
+<h2 id="sec:foundations">基本概念与理论基础</h2>
+<h3 id="subsec:distributions-and-classification">联合分布、条件分布与分类决策</h3>
+<p>我们令 \(x\) 表示观测数据，\(y\) 表示类别标签。\(x\) 与 \(y\) 的联合分布可以分解为：</p>
+<a id="eq:joint-distribution"></a>
+<div class="math-display">\[p(x,y)=p(y)p(x\mid y)=p(x)p(y\mid x).
+\tag{1}\]</div>
+<p>其中，\(p(y)\) 是类别先验；\(p(x\mid y)\) 描述给定类别时观测数据的分布；\(p(x,y)\) 同时描述输入与类别；\(p(y\mid x)\) 则表示观察到输入后，各类别的后验概率。</p>
+<p>对于离散的类别，贝叶斯公式给出：</p>
+<a id="eq:bayes-rule"></a>
+<div class="math-display">\[p(y\mid x)
+=
+\frac{p(x\mid y)p(y)}
+{\sum_{y'}p(x\mid y')p(y')}.
+\tag{2}\]</div>
+<p>生成式分类器可以先学习类别先验与类的条件分布，然后利用公式 <a href="#eq:bayes-rule">(2)</a> 进行分类<sup class="citation"><a href="#ref-1">[1]</a></sup>。</p>
+<h3 id="subsec:maximum-likelihood">最大似然估计</h3>
+<p>设训练数据为 \(\mathcal D=\{x^{(1)},\ldots,x^{(N)}\}\)，各样本独立同分布，\(p_\theta(x)\) 是参数为 \(\theta\) 的概率模型。将数据视为已知量，似然函数表示为：</p>
+<a id="eq:likelihood"></a>
+<div class="math-display">\[L(\theta;\mathcal D)=\prod_{i=1}^{N}p_\theta(x^{(i)}).
+\tag{3}\]</div>
+<p>最大似然估计选择使观测数据的概率或概率密度尽可能大的参数。由于对数函数单调递增，可以将连乘转化为求和，得到等价的优化目标：</p>
+<a id="eq:maximum-likelihood"></a>
+<div class="math-display">\[\hat\theta_{\mathrm{ML}}
+=\arg\max_\theta \log L(\theta;\mathcal D)
+=\arg\max_\theta\sum_{i=1}^{N}\log p_\theta(x^{(i)}).
+\tag{4}\]</div>
+<p>其中，\(N\) 是样本数量。实际训练中也常最小化负对数似然，与最大化对数似然等价<sup class="citation"><a href="#ref-1">[1]</a></sup>。</p>
+<h3 id="subsec:variational-inference">变分推断与证据下界</h3>
+<p>在潜变量模型中，边缘似然 \(p_\theta(x)\) 又称证据，通常难以直接计算，真实后验 \(p_\theta(z\mid x)\) 也难以求解。变分推断用参数为 \(\phi\) 的分布 \(q_\phi(z\mid x)\) 近似真实后验，并定义证据下界（ELBO）：</p>
+<a id="eq:elbo-definition"></a>
+<div class="math-display">\[\mathcal L_{\mathrm{ELBO}}(x)
+=\mathbb E_{z\sim q_\phi(z\mid x)}
+\left[\log\frac{p_\theta(x,z)}{q_\phi(z\mid x)}\right].
+\tag{5}\]</div>
+<p>其中，\(z\) 是潜变量，\(p_\theta(x,z)\) 是联合分布。该下界与对数证据满足：</p>
+<a id="eq:elbo-decomposition"></a>
+<div class="math-display">\[\log p_\theta(x)
+=\mathcal L_{\mathrm{ELBO}}(x)
++D_{\mathrm{KL}}\!\left(q_\phi(z\mid x)\,\|\,p_\theta(z\mid x)\right).
+\tag{6}\]</div>
+<p>KL 散度衡量两个分布的差异且非负，因此 ELBO 不超过对数证据；两种后验相同时取等号。最大化 ELBO 可以联合学习模型与近似后验，为 VAE 等模型提供可优化的训练目标<sup class="citation"><a href="#ref-2">[2]</a></sup>。</p>
+<h3 id="subsec:meaning-of-distribution-modeling">建模条件分布与联合分布的含义</h3>
+<p>以下令 \(x\) 表示观测数据，\(y\) 表示类别标签。</p>
+<p><strong>建模 \(p(y\mid x)\)，意味着给定输入后，描述类别的不确定性。</strong>对于一个给定的输入 \(x\)，模型在可能的类别中分配概率，这些概率之和为 1。例如分类交叉熵训练，就是通过提高训练数据中真实标签的条件概率来学习这种分配，它选择后验概率最大的类别作为分类结果。因此，它主要回答对于已知输入时判断类别的方式，属于判别式建模。</p>
+<p><strong>建模 \(p(x\mid y)\)，意味着给定类别后，描述该类数据的变化。</strong>对于固定的类别 \(y\)，模型描述不同输入的可能取值以及其相对可能性，每个类别都对应一个关于 \(x\) 的分布。如果采用条件最大似然训练，就是提高每个观测样本在其所属类别下的概率或密度；如果从模型采样，则可以在指定类别下生成新数据。</p>
+<p><strong>建模 \(p(x,y)\)，意味着同时描述输入与类别的联合分布。</strong> 按照公式 <a href="#eq:joint-distribution">(1)</a>，联合分布可以分解为 \(p(y)p(x\mid y)\)：先按照先验分布 \(p(y)\) 采样类别，再从对应的类条件分布 \(p(x\mid y)\) 中采样观测数据，从而得到一个 \((x,y)\) 样本对。联合分布也可以写成 \(p(x)p(y\mid x)\)。对类别 \(y\) 求和，可以得到输入的边缘分布 \(p(x)=\sum_y p(x,y)\)；利用联合分布进一步条件化，则可以得到用于分类的后验分布 \(p(y\mid x)\)。因此，联合分布同时包含关于 \(x\)、\(y\) 以及二者统计关系的信息。</p>
+<p>上述分布可以通过概率乘法公式和贝叶斯公式相互联系，但从一个条件分布推导另一个条件分布时，还需要相应的边缘分布。例如，相同的 \(p(y\mid x)\) 可以与不同的 \(p(x)\) 构成不同的联合分布。因此，仅学习分类所需的 \(p(y\mid x)\)，并不意味着已经学习了输入数据的分布。另一方面，\(p(x\mid y)\) 与 \(p(y)\) 可以共同确定联合分布 \(p(x,y)\)，并进一步通过贝叶斯公式得到用于分类的 \(p(y\mid x)\)。判别式建模主要关注类别预测，而生成式建模还需要刻画数据本身的分布，因此往往需要额外处理密度估计、边缘化或采样等问题。</p>
+<h2 id="sec:methods">代表性方法及数学原理</h2>
+<p>生成模型的目标是学习训练数据的分布，并生成具有相似特征的新样本。不同方法的主要区别，在于如何描述数据分布，以及如何从随机性中产生有结构的数据。</p>
+<h3 id="subsec:gmm">高斯混合模型</h3>
+<p>高斯混合模型（GMM）用多个高斯分布的加权组合描述数据。直观上，一个高斯分布适合表示集中在某个中心附近的数据；当数据包含多个群体时，就可以用多个分布共同描述：</p>
+<a id="eq:gmm-density"></a>
+<div class="math-display">\[p(x)=\sum_{k=1}^{K}\pi_k\mathcal N(x;\mu_k,\Sigma_k).
+\tag{7}\]</div>
+<p>其中，\(x\) 是观测样本，\(K\) 是分量数量，\(\mu_k\) 和 \(\Sigma_k\) 分别控制第 \(k\) 个分量的中心与分散程度；权重 \(\pi_k\) 非负且总和为一。生成样本时，先按权重选择一个分量，再从该高斯分布中采样，所选分量的编号就是模型的离散潜变量<sup class="citation"><a href="#ref-1">[1]</a></sup>。</p>
+<p>高斯混合模型通常采用期望最大化（EM）算法估计参数：E 步计算每个样本属于各分量的概率；M 步将这些概率作为权重，更新均值、协方差和混合系数。反复交替，使模型逐渐更好地拟合数据<sup class="citation"><a href="#ref-3">[3]</a></sup>。</p>
+<p>GMM 的结构清楚，也能用于聚类和密度估计。但面对图像等高维复杂数据，往往需要较多分量，参数数量和估计难度随之增加。</p>
+<h3 id="subsec:vae">变分自编码器</h3>
+<p>变分自编码器（VAE）假设数据由连续潜变量 \(z\) 生成，并用神经网络描述这一过程。潜变量可以理解为数据的压缩表示，其中保留了生成样本所需的信息。模型通常将标准高斯分布作为先验 \(p(z)\)，通过解码器给出的条件分布 \(p_\theta(x\mid z)\) 生成数据。</p>
+<p>训练时，还需要编码器根据输入估计潜变量的分布。由于真实后验难以直接计算，编码器用 \(q_\phi(z\mid x)\) 进行近似，通常输出高斯分布的均值和方差，再从中采样并交给解码器重构输入。\(\phi\) 和 \(\theta\) 分别表示编码器与解码器的参数。编码器输出分布而非固定编码，因此同一输入也可以对应不同的潜变量采样结果。</p>
+<p>VAE 通过最大化证据下界（ELBO）进行训练：</p>
+<a id="eq:vae-elbo"></a>
+<div class="math-display">\[\mathcal L_{\mathrm{ELBO}}(x)
+=
+\mathbb E_{z\sim q_\phi(z\mid x)}[\log p_\theta(x\mid z)]
+-
+D_{\mathrm{KL}}\!\left(q_\phi(z\mid x)\,\|\,p(z)\right)
+\leq \log p_\theta(x).
+\tag{8}\]</div>
+<p>其中，期望表示对潜变量采样结果取平均。第一项鼓励解码器准确重构输入；第二项用 KL 散度衡量近似后验与先验的差异，避免潜变量分布过度偏离先验。这两个要求共同约束潜在空间，使模型既保留样本信息，又便于从先验中采样生成新数据。</p>
+<p>为让采样过程能够反向传播，VAE 使用重参数化技巧：先采样独立的标准高斯噪声，再按编码器输出的标准差缩放并加上均值，使梯度能够传回编码器。</p>
+<p>生成新样本时，直接从先验采样并输入解码器即可。经典图像 VAE 的结果常较平滑，细节可能不足。</p>
+<h3 id="subsec:gan">生成对抗网络</h3>
+<p>生成对抗网络（GAN）通过两个网络的竞争学习生成数据。生成器 \(G\) 接收来自简单先验 \(p(z)\) 的随机噪声 \(z\)，输出样本 \(G(z)\)；判别器 \(D\) 接收真实或生成样本，输出其来自真实数据的估计概率。生成器努力提高样本的逼真程度，判别器则努力识别真假。</p>
+<p>原始 GAN 的训练目标是：</p>
+<a id="eq:gan-objective"></a>
+<div class="math-display">\[\min_G\max_D
+\left\{
+\mathbb E_{x\sim p_{\mathrm{data}}}[\log D(x)]
++
+\mathbb E_{z\sim p(z)}[\log(1-D(G(z)))]
+\right\}.
+\tag{9}\]</div>
+<p>其中，\(p_{\mathrm{data}}\) 表示真实数据分布，两项期望分别对真实样本和随机噪声取平均。判别器最大化该目标，希望对真实样本给出高分、对生成样本给出低分；生成器最小化该目标，希望生成样本获得更高分。训练时交替更新两个网络，使判别器提供的信号不断指导生成器。判别器相当于一个不断改进的评判者，生成器则根据它的反馈调整参数。</p>
+<p>在理想情况下，生成分布与真实分布一致，最优判别器对两类样本都只能给出二分之一的概率。但实际训练未必能达到这一平衡。GAN 不必显式计算生成数据的概率密度，因此属于隐式生成模型；训练完成后，只需保留生成器即可采样。</p>
+<p>GAN 往往能生成清晰的图像，但双方相互影响，训练容易出现波动；还可能发生“模式崩溃”，即反复生成少数相似样本，遗漏真实数据中的其他类型。因此，图像看起来逼真，并不意味着模型充分学到了数据的多样性。</p>
+<h3 id="subsec:diffusion">扩散模型</h3>
+<p>扩散模型把生成任务分解为一系列去噪步骤。训练时，逐步给真实数据加入高斯噪声，使原有结构被噪声淹没；再让神经网络学习不同噪声程度下的去噪规律。生成时，从随机噪声出发，逐步得到具有结构的新样本<sup class="citation"><a href="#ref-4">[4]</a></sup>。</p>
+<p>设原始样本为 \(x_0\)，第 \(t\) 步的噪声强度为 \(\beta_t\)，定义 \(\alpha_t=1-\beta_t\)，\(\bar\alpha_t=\prod_{s=1}^{t}\alpha_s\)。任意时间步的带噪样本可以直接计算为：</p>
+<a id="eq:diffusion-forward"></a>
+<div class="math-display">\[x_t=\sqrt{\bar\alpha_t}\,x_0+\sqrt{1-\bar\alpha_t}\,\epsilon,
+\qquad \epsilon\sim\mathcal N(0,I).
+\tag{10}\]</div>
+<p>其中，\(\epsilon\) 是标准高斯噪声，\(I\) 是单位矩阵，\(\bar\alpha_t\) 表示原始信号的保留比例。随着时间步增加，信号占比下降、噪声占比上升；当最终的信号占比足够小时，样本分布接近标准高斯分布。加噪规则预先设定，无须网络学习，也不必逐步加噪才能得到训练所需的 \(x_t\)。</p>
+<p>网络真正学习的是如何去噪。常见做法是输入 \(x_t\) 和时间步 \(t\)，让网络 \(\epsilon_\theta(x_t,t)\) 预测加入的噪声，并最小化以下简化损失：</p>
+<a id="eq:diffusion-noise-loss"></a>
+<div class="math-display">\[\mathcal L_{\mathrm{simple}}(\theta)
+=
+\mathbb E_{x_0,t,\epsilon}
+\left[\left\|\epsilon-\epsilon_\theta(x_t,t)\right\|_2^2\right].
+\tag{11}\]</div>
+<p>这里，\(\theta\) 是网络参数，平方范数衡量预测噪声与实际噪声之间的误差。训练时，从数据集抽取样本，在各时间步中均匀采样一个时间步，再生成高斯噪声构造输入。这样，同一个网络便能学习不同噪声程度下的恢复规律，时间步则告诉它当前数据受噪声影响的程度。</p>
+<p>生成时，先采样标准高斯噪声，再根据网络预测和预设的采样规则逐步更新样本、降低噪声，直到得到最终结果。这一过程利用训练数据中学到的规律合成新样本，并非还原某个特定训练样本。</p>
+<p>扩散模型的噪声预测目标较直接，通常能兼顾生成质量和样本多样性。不过，常规采样需要多次调用网络，生成速度较慢，训练与推理的计算开销也较大，需要在采样步数、生成效果和效率之间进行权衡。</p>
+<h2 id="sec:literature-review">代表性文献分析</h2>
+<p>从深度生成模型的发展过程来看，VAE、GAN 和 Diffusion Model 分别体现了不同的生成建模思路。Kingma 和 Welling 提出的 Auto-Encoding Variational Bayes 将变分推断与深度神经网络结合，使连续潜变量模型能够利用随机梯度方法进行端到端训练<sup class="citation"><a href="#ref-5">[5]</a></sup>；Goodfellow 等提出的 GAN 则绕开显式概率密度建模，通过生成器与判别器之间的对抗学习实现数据生成<sup class="citation"><a href="#ref-6">[6]</a></sup>；随后，DDPM 将生成过程转化为从噪声逐步恢复数据的迭代去噪过程<sup class="citation"><a href="#ref-7">[7]</a></sup>，而 DDIM 又进一步针对扩散模型采样速度较慢的问题重新设计了生成过程<sup class="citation"><a href="#ref-8">[8]</a></sup>。四篇论文分别体现了深度生成模型在潜变量建模、对抗学习和迭代生成三个方向上的典型方法。</p>
+<h3 id="subsec:paper-aevb">Auto-Encoding Variational Bayes</h3>
+<p>Kingma 和 Welling 在 <em>Auto-Encoding Variational Bayes</em> 中提出了一种面向连续潜变量生成模型的可扩展学习与推断方法，并由此形成了后来广泛使用的变分自编码器（Variational Autoencoder，VAE）框架<sup class="citation"><a href="#ref-5">[5]</a></sup>。论文关注的主要问题并不是单纯设计一种新的神经网络结构，而是如何使包含连续潜变量的概率生成模型能够在大规模数据集上进行高效训练。</p>
+<p>传统潜变量模型通常假设观测数据背后存在无法直接观测的潜变量，并通过潜变量解释数据产生的原因。例如，一幅人脸图像虽然具有大量像素，但其中可能隐含着身份、姿态、表情、光照等更为紧凑的因素。生成模型希望首先描述这些潜在因素的分布，再描述潜在因素如何产生具体观测数据。问题在于，对于复杂数据和复杂生成模型，从观测数据反推出潜变量往往非常困难，其真实后验分布通常无法直接计算。传统变分推断往往需要针对不同样本分别进行优化，因此难以直接扩展到大规模数据和深度神经网络。</p>
+<p><em>Auto-Encoding Variational Bayes</em> 的重要设计是引入一个专门负责推断的神经网络。对于任意输入样本，该网络都能够直接给出其潜变量分布的参数，而不需要针对每个样本重新进行独立优化。后来通常将这一网络称为编码器（encoder），而将负责从潜变量产生数据的生成网络称为解码器（decoder）。因此，VAE 可以看作由“推断模型”和“生成模型”两个部分共同组成。</p>
+<p>编码器的作用与普通自编码器存在明显区别。传统自编码器通常把输入压缩为一个确定性的低维向量，再由解码器尝试恢复原始输入；VAE 的编码器并不直接产生唯一的潜在表示，而是根据输入估计一个潜变量的概率分布。也就是说，同一输入所对应的不是潜空间中的一个固定点，而是潜空间中的一个概率区域。在常见实现中，编码器输出描述该分布的一组参数，随后从这一分布中采样得到具体的潜变量，再交给解码器生成或重建数据。</p>
+<p>这种设计使 VAE 的潜空间具有明显的概率建模含义。模型并不是简单地记住“某个样本对应哪个向量”，而是试图让不同样本对应的潜变量形成一个具有连续结构的整体分布。训练完成以后，即使不再提供原始输入，也可以直接从预先规定的潜变量先验分布中随机采样，再将采样结果输入解码器，从而生成新的数据。因此，VAE 同时具有两种工作方式：在训练和重建阶段，数据经过编码器得到潜变量，再经过解码器恢复数据；在真正生成新样本时，则不需要编码器，而是直接从潜空间采样并通过解码器产生新数据。</p>
+<p>图 <a href="#fig:gan-vae-architecture">1</a> 对比了 GAN 与 VAE 的训练结构和生成阶段。图中 (c) 展示 VAE 通过编码器和解码器共同完成训练，(d) 则展示训练完成后仅利用解码器生成样本的过程，有助于区分编码器的推断作用与解码器的生成作用。</p>
+<figure id="fig:gan-vae-architecture">
+  <img src="assets/images/GANandVAE.png" alt="图 1：GAN 与 VAE 的训练结构及生成阶段：(a) GAN 训练结构；(b) GAN 生成阶段；(c) VAE 训练结构；(d) VAE 生成阶段。" loading="lazy">
+  <figcaption>图 1　GAN 与 VAE 的训练结构及生成阶段：(a) GAN 训练结构；(b) GAN 生成阶段；(c) VAE 训练结构；(d) VAE 生成阶段。<sup class="citation"><a href="#ref-9">[9]</a></sup></figcaption>
+</figure>
+<p><em>Auto-Encoding Variational Bayes</em> 能够实现这一训练过程的关键是论文提出的重参数化方法。潜变量需要通过随机采样得到，而普通随机采样操作会阻断神经网络的梯度传播，使编码器难以通过标准反向传播进行训练。AEVB 将随机性从网络输出本身转移到一个独立的随机噪声变量上，使采样结果可以表示为编码器输出参数与随机噪声共同作用的结果。这样，随机采样仍然存在，但网络参数对最终结果的影响变成了可微分的计算过程，因此编码器与解码器都能够通过随机梯度下降进行端到端优化。论文将这一思想用于构造可由标准随机梯度方法优化的变分下界估计器，并进一步实现了连续潜变量模型中的高效推断。</p>
+<p>从模型训练流程看，VAE 可以分为四个连续阶段。首先，将真实样本输入编码器，由编码器根据样本特征估计相应的潜变量分布；其次，根据这一分布获得潜变量样本；随后，将潜变量输入解码器，由解码器生成与原始数据相对应的输出；最后，根据生成结果与原始数据之间的差异以及潜变量分布与预设先验之间的偏离程度共同更新网络。前者要求模型保留足够的信息以重建输入，后者则约束不同样本对应的潜表示不要任意分散，而是形成相对规整、连续的潜空间。</p>
+<p>因此，VAE 的训练并不是普通自编码器意义上的“尽可能准确地压缩再还原”。如果模型只考虑重建效果，编码器完全可能把每个训练样本映射到彼此孤立的位置，这样虽然能够很好地重建训练样本，却很难从潜空间中随机选择一个新位置并得到合理结果。VAE 对潜变量分布施加约束，就是为了使潜空间中的邻近位置具有一定连续性，使随机采样和潜变量插值具有实际意义。这也是 VAE 能够从一个表示学习模型转变为真正生成模型的重要原因。</p>
+<p>从生成过程来看，VAE 学到的数据生成规律主要体现在解码器及其对应的生成模型中。编码器负责解决“给定数据，潜变量可能是什么”的推断问题，而解码器学习“给定潜变量，应当生成什么样的数据”。训练过程中，编码器帮助模型寻找与真实数据对应的潜在表示，从而为解码器提供有效的训练信号；模型训练完成以后，如果任务只是生成新样本，编码器并不是必需的，只需要从先验分布采样潜变量并通过解码器生成数据即可。因此，从生成建模角度看，解码器承担了从潜空间到数据空间的映射，而编码器主要承担高效近似推断的功能。</p>
+<p>VAE 相比传统潜变量模型的重要进步，在于将概率生成模型与深度神经网络结合起来。一方面，神经网络使潜变量到复杂高维数据之间的映射具有更强的表示能力；另一方面，编码器实现的近似推断避免了对每个样本反复执行复杂优化，使模型能够在大规模数据上采用小批量随机梯度方法训练。原论文特别强调了这种面向每个数据样本共享推断网络的方式，即后来通常所说的 amortized inference，它成为大量后续深度潜变量模型的基本设计。</p>
+<p>但 VAE 也存在明显限制。由于模型需要同时保证样本重建能力和潜空间整体分布的规则性，两项目标之间存在一定权衡。当模型过度强调潜空间的连续性时，可能损失部分样本细节；尤其在图像生成中，早期 VAE 的生成结果通常比后来 GAN 和扩散模型更加平滑，精细纹理表现有限。此外，预先指定的简单潜变量先验也可能难以准确描述真实数据中复杂的潜在结构。这些问题推动了后续更灵活的潜变量模型以及其他生成范式的发展。</p>
+<p>总体来看，<em>Auto-Encoding Variational Bayes</em> 的主要贡献并不是简单提出“编码器加解码器”这一网络结构，而是提出了一套能够利用神经网络高效训练连续潜变量生成模型的方法。编码器解决近似后验推断问题，解码器承担数据生成过程，重参数化机制则使随机潜变量能够纳入标准反向传播体系。由此形成的 VAE 将概率建模、潜变量表示与深度学习连接起来，是从传统生成模型走向现代深度生成模型的重要节点。</p>
+<h3 id="subsec:paper-gan">Generative Adversarial Networks</h3>
+<p>2014 年，Goodfellow 等提出生成对抗网络（Generative Adversarial Network，GAN）<sup class="citation"><a href="#ref-6">[6]</a></sup>，采用了与 VAE 不同的生成模型训练方式。GAN 不再显式设计一个编码器来近似潜变量后验，而是设置生成器和判别器两个网络，通过二者之间的对抗过程训练生成模型。</p>
+<p>其中，生成器以随机噪声作为输入，并将其映射为与真实数据形式相同的生成样本；判别器同时接收真实样本和生成样本，并判断输入来自真实数据还是生成器。训练过程中，判别器不断提高区分真实数据和生成数据的能力，而生成器则不断提高生成样本的真实性，使判别器更难作出正确判断。原论文将这一过程描述为生成模型与判别模型之间的两人极小极大博弈。</p>
+<p>GAN 与 VAE 的主要差异体现在学习方式上。VAE 建立了明确的潜变量概率生成过程，并利用编码器进行近似推断；GAN 则通过判别器提供的学习信号间接推动生成器逼近真实数据分布。生成阶段只需要保留生成器，从随机噪声出发即可直接生成完整样本，不需要进行迭代推断，因此采样过程十分直接。</p>
+<p>这种对抗式学习能够产生较为清晰的图像，也推动了高质量图像生成的发展，但其训练过程较为敏感。由于生成器和判别器需要保持相对平衡，如果一方学习速度明显超过另一方，训练可能出现不稳定现象。此外，生成器可能只覆盖真实数据分布中的部分模式，即所谓的模式崩溃。后续大量 GAN 工作都围绕网络结构、训练稳定性以及模式覆盖能力进行了改进。</p>
+<h3 id="subsec:paper-ddpm">Denoising Diffusion Probabilistic Models</h3>
+<p>2020 年，Ho、Jain 和 Abbeel 提出的 Denoising Diffusion Probabilistic Models（DDPM）使扩散概率模型成为深度生成模型中的重要技术路线<sup class="citation"><a href="#ref-7">[7]</a></sup>。与 VAE 从低维潜变量一次性生成数据、GAN 从随机噪声直接生成数据不同，DDPM 将生成建模转化为一个逐步去除噪声的过程。</p>
+<p>DDPM 包含两个方向相反的过程。前向过程中，模型不断向真实数据加入少量随机噪声，经过足够多的步骤后，原始数据逐渐被破坏并接近纯随机噪声。这个过程的作用是人为构造一条从复杂真实数据分布到简单噪声分布的路径。</p>
+<p>模型真正需要学习的是相反的过程，即如何从带噪数据逐步恢复出更加干净的数据。训练时，从真实样本产生不同噪声程度的样本，并训练神经网络估计其中包含的噪声。经过训练以后，模型可以从一个完全随机的噪声样本出发，重复执行去噪操作，使其逐渐出现整体结构、局部轮廓和细节，最终形成符合训练数据分布的新样本。Ho 等人的工作表明，这种基于逐步去噪的生成方法能够实现高质量图像生成。</p>
+<p>与 GAN 相比，DDPM 不需要生成器和判别器之间进行对抗训练，因此训练过程通常更加稳定，同时具有较好的样本质量和数据分布覆盖能力。其主要缺点是生成过程需要进行大量连续的去噪步骤，每生成一个样本都需要多次调用神经网络，因此采样速度明显慢于 GAN 等一次性生成方法。</p>
+<h3 id="subsec:paper-ddim">Denoising Diffusion Implicit Models</h3>
+<p>针对 DDPM 采样步骤较多、生成速度较慢的问题，Song、Meng 和 Ermon 在 2020 年提出了 Denoising Diffusion Implicit Models（DDIM）<sup class="citation"><a href="#ref-8">[8]</a></sup>。DDIM 并没有重新训练一个完全不同的扩散模型，而是重新考察了 DDPM 中训练过程与采样过程之间的关系，并提出了一种更加灵活的反向生成方式。</p>
+<p>DDPM 的生成过程通常需要沿着预先规定的大量时间步逐步去噪。DIM 构造了与 DDPM 具有相同条件边缘分布的非马尔可夫前向过程，并由此推导相应的反向生成过程，使其可以在保持与 DDPM 相同训练目标的情况下，使用更少的采样步骤完成从噪声到数据的转换。这意味着已经训练好的扩散模型可以采用不同的采样策略，而不一定严格按照原始 DDPM 的完整反向过程生成数据。原论文实验显示，在一定条件下，DDIM 可以显著减少实际采样时间，同时保持较好的生成质量。</p>
+<p>此外，DDIM 可以将生成过程设置为确定性的：给定相同的初始噪声和采样过程，可以得到确定的生成结果。这一性质使其不仅可以用于加速采样，也有利于潜在表示插值以及后续图像编辑等任务。</p>
+<p>总的来看，DDPM 建立了“逐步加噪---学习逐步去噪”的基本生成框架，而 DDIM 进一步说明，在相同模型和训练方式下，可以重新设计从噪声返回数据的路径，从而减少生成步骤。此后，如何在保持生成质量的同时进一步降低扩散模型采样成本，也成为扩散模型研究中的重要方向。</p>
+<h2 id="sec:comparison">不同方法比较</h2>
+<p>GMM、VAE、GAN 和 DDPM 都通过学习数据分布生成新样本，主要差异体现在分布表示、训练目标，以及生成质量与计算成本的取舍。下表比较四种方法的经典形式。</p>
+<a id="tab:model-comparison"></a>
+<p><strong>表 1　四类经典生成模型的比较</strong></p>
+<div class="table-wrap"><table><thead><tr>
+<th><strong>模型</strong></th>
+<th><strong>建模方式</strong></th>
+<th><strong>训练方式</strong></th>
+<th><strong>主要优势</strong></th>
+<th><strong>主要局限</strong></th>
+</tr></thead><tbody>
+<tr><td>GMM</td><td>多个高斯分布加权混合</td><td>利用 EM 算法进行最大似然估计</td><td>概率密度可计算，便于聚类与解释</td><td>复杂高维数据往往需要较多分量</td></tr>
+<tr><td>VAE</td><td>连续潜变量与神经网络解码</td><td>最大化证据下界</td><td>兼顾表示学习、重构与生成</td><td>近似推断有误差，图像细节可能较平滑</td></tr>
+<tr><td>GAN</td><td>将随机噪声映射为数据</td><td>生成器与判别器交替对抗训练</td><td>图像往往较清晰，采样直接</td><td>训练可能不稳定，存在模式崩溃风险</td></tr>
+<tr><td>DDPM</td><td>通过多步反向去噪生成数据</td><td>学习预测不同时间步的噪声</td><td>可获得较好的生成质量和多样性</td><td>采样需反复调用网络，计算开销较大</td></tr>
+</tbody></table></div>
+<p>从概率表示与推断来看，GMM 直接给出混合密度，离散潜变量表示样本来自哪个分量；VAE 则用连续潜变量描述数据变化，并由神经网络定义生成过程。VAE 虽然具有明确的概率模型，但边缘密度通常难以直接计算，因此需要编码器近似后验并优化似然下界。GAN 的生成器与噪声先验也共同定义了生成分布，只是通常无法直接求出其密度。DDPM 则通过一系列反向条件分布连接噪声与数据，将生成任务分解为多个步骤。</p>
+<p>从训练特点与生成效果来看，GMM 的参数估计较直观，但结果受分量数量和初始化影响；VAE 的训练同时考虑重构和潜变量分布约束，需要在信息保留与约束强度之间取得平衡。GAN 利用判别器提供学习信号，有助于获得清晰的图像，但双方优化失衡时可能训练不稳，生成样本也可能集中在少数类型。DDPM 的噪声预测目标较直接，无须处理对抗双方的平衡问题，不过生成效果仍依赖网络、噪声调度和训练资源。</p>
+<p>从采样效率与适用场景来看，GMM 适合较低维、具有聚类结构的数据，也可作为密度估计的基础模型。VAE 适合需要潜在表示、数据重构和生成能力的任务，生成时只需从先验采样并通过解码器。GAN 同样可直接调用生成器得到样本，在重视视觉效果和生成速度时具有吸引力，但需要关注训练稳定性与模式覆盖。DDPM 通常以更多计算换取较好的生成效果，适合能够接受迭代采样成本的任务。</p>
+<h2 id="sec:experiments">实验验证</h2>
+<h3 id="subsec:experiment-setup">实验目的与设置</h3>
+<p>针对“VAE 的生成结果通常比较平滑，细节可能不足”这一结论，我们在 MNIST 手写数字数据集上完成了一组小规模实验，对比 VAE 和 DCGAN 的生成结果。实验代码位于 <a href="https://github.com/Sy-SU/VAEvsGAN" target="_blank" rel="noreferrer">https://github.com/Sy-SU/VAEvsGAN</a>，主要参数见表 <a href="#tab:experiment-settings">2</a>。</p>
+<a id="tab:experiment-settings"></a>
+<p><strong>表 2　VAE 与 DCGAN 实验的主要训练参数</strong></p>
+<div class="table-wrap"><table><thead><tr>
+<th><strong>参数</strong></th>
+<th><strong>VAE</strong></th>
+<th><strong>DCGAN</strong></th>
+</tr></thead><tbody>
+<tr><td>训练轮数</td><td>20</td><td>50</td></tr>
+<tr><td>批大小</td><td>128</td><td>128</td></tr>
+<tr><td>潜变量维度</td><td>20</td><td>20</td></tr>
+<tr><td>优化器</td><td>Adam</td><td>Adam</td></tr>
+<tr><td>学习率</td><td>0.001</td><td>0.0002</td></tr>
+<tr><td>Adam 动量参数</td><td>(0.9, 0.999)</td><td>(0.5, 0.999)</td></tr>
+</tbody></table></div>
+<p>VAE 使用卷积编码器与转置卷积解码器，损失由逐像素二元交叉熵重构项和 KL 项相加组成，KL 项权重为 1。DCGAN 采用交替对抗训练，生成器使用非饱和损失；判别器还将真实图像与错误类别标签配对作为负样本，以强化条件约束。VAE 的输入像素归一化到 0 至 1，DCGAN 训练时使用负 1 至 1；可视化时均统一到 0 至 1 的灰度范围。</p>
+<h3 id="subsec:experiment-progress">训练过程</h3>
+<p>为观察模型随训练发生的变化，我们固定潜变量和数字“5”这一条件，分别记录两种模型在 10 个训练节点的输出。图 <a href="#fig:experiment-vae-progress">2</a> 中，VAE 在第 1 轮已经形成连续轮廓，随后笔画逐渐集中，但边缘仍有较宽的灰度过渡。后期样本在视觉上更接近“6”，说明边缘平滑与类别条件未充分满足是两个需要分别讨论的问题。</p>
+<figure id="fig:experiment-vae-progress">
+  <img src="assets/images/VAE-train-progress.png" alt="图 2：VAE 的训练过程" loading="lazy">
+  <figcaption>图 2　VAE 的训练过程</figcaption>
+</figure>
+<p>图 <a href="#fig:experiment-gan-progress">3</a> 中，DCGAN 第 1 轮的结果包含不连贯的笔画，随后逐渐形成可辨识的“5”。后期笔画与背景的对比较强，轮廓较清楚，但局部形状仍有变化，少量位置存在杂散亮点。</p>
+<figure id="fig:experiment-gan-progress">
+  <img src="assets/images/GAN-train-progress.png" alt="图 3：DCGAN 的训练过程" loading="lazy">
+  <figcaption>图 3　DCGAN 的训练过程</figcaption>
+</figure>
+<h3 id="subsec:experiment-samples">同条件生成结果与分析</h3>
+<p>图 <a href="#fig:experiment-samples">4</a> 比较两种模型训练结束后的随机生成结果，每种模型展示 8 张图像。同一列使用数值相同的潜变量，类别条件均为“5”。</p>
+<figure id="fig:experiment-samples">
+  <img src="assets/images/conditional-samples-5.png" alt="图 4：以数字“5”为条件的随机生成结果" loading="lazy">
+  <figcaption>图 4　以数字“5”为条件的随机生成结果</figcaption>
+</figure>
+<p>从这组样本看，VAE 能生成连贯的笔画，但部分边缘较柔和，局部灰度较浅，某些样本的开口和转折不够明确；第 3、8 列的形状也较难辨认为“5”。DCGAN 的多数样本轮廓更鲜明，上部横笔和下部弯曲较容易区分。</p>
+<p>结合代码可以发现，VAE 生成结果较为平滑，可能与其输出方式和 KL 约束有关。解码器直接输出 Sigmoid 概率值，未进行二值采样，因此不确定的边缘像素会呈现为灰色，导致轮廓较柔和。同时，KL 约束可能使潜在表示损失部分细节，从而造成灰度过渡和细节不足。</p>
+<h2 id="sec:limitations">现有方法的局限性</h2>
+<p>VAE 的生成结果可能出现轮廓较平滑、细节不足的现象。常见实现通常采用逐像素重构目标，但像素层面的拟合效果与视觉质量并不完全一致。例如，在采用伯努利似然的情况下，如果直接将解码器输出的像素概率作为灰度值显示，那么模型对边缘像素的中间概率预测就会表现为灰度过渡，从而使轮廓显得更加平滑。因此，在分析生成结果时，应区分模型本身的表示能力与输出方式带来的视觉效果，不能将所有平滑现象都简单归因于细节学习不足<sup class="citation"><a href="#ref-10">[10]</a></sup>。</p>
+<p>VAE 还需要在信息保留与潜在分布约束之间进行权衡。重构项鼓励潜变量保留恢复输入所需的信息，而 KL 散度项则促使近似后验接近预设的先验分布。较强的 KL 约束可能削弱潜变量对细节信息的保留；但减弱这一约束即使能够改善重构效果，也不一定能够提高从先验分布采样时的生成质量。因此，VAE 的重构能力与生成能力应分别评价，不能仅依据重构误差判断模型表现<sup class="citation"><a href="#ref-5">[5]</a></sup>。</p>
+<p>此外，VAE 的无监督训练目标并不直接要求潜在表示具有良好的类别区分能力。模型能够较好地重构输入，并不意味着其潜在空间一定保留了最有利于分类的信息。对于模式识别任务，仅观察生成样本的视觉效果或比较重构误差，仍不足以评价潜在表示的有效性，还需要进一步考察其在真实分类任务中的表现<sup class="citation"><a href="#ref-11">[11]</a></sup>。</p>
+<h2 id="sec:research-directions">我的思考与可能的研究方向</h2>
+<p>基于上述局限，我希望在现有 MNIST 实验的基础上，进一步分析影响 VAE 表现的具体因素，并考察其潜在表示在分类任务中的作用。后续实验仍采用小规模设置，通过控制变量比较不同方案，并避免预先假定某种调整一定能够带来性能提升。</p>
+<p>针对生成图像细节不足的问题，可以固定潜变量维度、KL 项权重和输出分布，仅调整解码器的结构或容量。实验中分别比较重构图像与从先验分布采样得到的生成图像，并在保持显示方式一致的条件下，观察笔画完整性、轮廓清晰度及异常结构，同时记录重构误差、模型参数量和训练时间。通过这一实验，可以检验细节不足是否与解码器的表达能力有关，并进一步判断增加模型容量是否能够带来相应改善。</p>
+<p>针对重构能力与潜在分布约束之间的权衡，可以以原始 VAE 为基线，分别改变潜变量维度和 KL 项权重，并采用单变量控制的方式进行比较。除记录重构项和未加权的 KL 项外，还应同时比较重构结果与先验采样结果，重点考察重构性能改善时，生成质量是否也随之提高。通过这一比较，可以进一步分析信息保留与分布约束之间的关系，避免仅依据重构误差选择模型。</p>
+<p>针对潜在表示的分类价值，可以在 VAE 训练完成后固定编码器，将编码器输出的潜变量均值作为特征，并训练结构一致的线性分类器。随后比较不同 VAE 设置下的分类准确率及各类别表现，并以直接使用原始像素训练的线性分类器作为对照。VAE 与分类器均仅使用训练集进行拟合，在验证集上选择模型设置，最后在真实测试集上进行评价。通过这一实验，可以检验重构效果较好的模型是否同时具有更有利于分类的潜在表示，从而将对 VAE 的评价进一步与模式识别任务联系起来。</p>
+<h2 id="sec:conclusion">总结</h2>
+<p>本报告围绕生成模型如何学习数据分布这一问题，梳理了联合分布、最大似然估计和变分推断等基础概念，并比较了 GMM、VAE、GAN 与扩散模型的建模方式。通过区分 \(p(y\mid x)\)、\(p(x\mid y)\) 和 \(p(x,y)\)，可以更清楚地理解类别预测与数据生成各自需要学习的信息。代表性论文的分析进一步表明，不同方法在近似推断、训练目标与采样过程上作出了不同选择，需要结合生成质量、样本多样性和计算成本评价其适用条件。</p>
+<p>在 MNIST 对比实验中，展示的 VAE 样本部分笔画边缘较柔和，DCGAN 样本的轮廓通常更鲜明，为 VAE 生成结果较平滑的判断提供了当前设置下的定性支持。结合代码与文献分析，这种视觉差异可能同时受到解码器输出方式、模型表达能力以及 KL 约束的影响，仍需通过控制变量实验区分其具体成因。因此，应分别考察图像的视觉效果、重构能力与先验采样质量，避免仅凭少量样本判断模型的整体优劣。</p>
+<p>通过这次阅读，我对机器学习最大的认识变化是：我们需要从主要关注模型结构和指标高低，转向先理解模型在学习什么分布、训练目标鼓励保留什么信息，再判断这些信息能否服务于具体任务。对 VAE 而言，较小的重构误差并不必然对应更好的生成质量，较好的重构效果也不保证潜在表示具有更强的类别区分能力。训练目标、生成表现与模式识别任务之间的关系，需要通过各自对应的评价来检验。</p>
+<h2 id="sec:ai-tool-use">生成式人工智能工具使用说明</h2>
+<p>本报告撰写过程中使用了 OpenAI Codex 作为辅助工具。使用范围包括概率建模相关概念的解释、章节结构梳理、部分章节文字的起草与改写、内容精简和表达润色，以及公式与符号检查、参考文献书目信息核对和 LaTeX 排版。排版辅助涉及章节拆分、公式自动编号、图表插入、交叉引用和字数统计等工作。</p>
+<p>在具体使用过程中，我提供已有正文、需要讨论的问题、实验结果图及代码仓库链接，并通过多轮交互调整内容。实验部分的辅助主要用于核对模型配置、整理图像观察和讨论可能的解释。实验图像由本人提供，相关分析以代码、已确认的参数和可视化结果为依据，并区分直接观察到的现象与尚待验证的成因。</p>
+<p>参考文献的作者、题名和出版信息以论文及其官方页面为依据，工具生成的概念解释与写作建议作为辅助参考。我结合阅读内容和实验结果对相关文字进行取舍与修订，报告的最终内容及论述由本人负责。</p>
+<h2 id="references">参考文献</h2>
+<ol class="references">
+<li id="ref-1"><a href="https://link.springer.com/book/9780387310732" target="_blank" rel="noreferrer">BISHOP C M. <em>Pattern Recognition and Machine Learning</em> （M）. New York, NY, USA: Springer, 2006.</a></li>
+<li id="ref-2"><a href="https://doi.org/10.1080/01621459.2017.1285773" target="_blank" rel="noreferrer">BLEI D M, KUCUKELBIR A, MCAULIFFE J D. Variational Inference: A Review for Statisticians （J/OL）. <em>Journal of the American Statistical Association</em>, 2017, 112(518): 859–877.</a></li>
+<li id="ref-3"><a href="https://doi.org/10.1111/j.2517-6161.1977.tb01600.x" target="_blank" rel="noreferrer">DEMPSTER A P, LAIRD N M, RUBIN D B. Maximum Likelihood from Incomplete Data Via the EM Algorithm （J/OL）. <em>Journal of the Royal Statistical Society: Series B (Methodological)</em>, 1977, 39(1): 1–22.</a></li>
+<li id="ref-4"><a href="https://proceedings.mlr.press/v37/sohl-dickstein15.html" target="_blank" rel="noreferrer">SOHL-DICKSTEIN J, WEISS E, MAHESWARANATHAN N, et al. Deep Unsupervised Learning using Nonequilibrium Thermodynamics （C）//<em>Proceedings of the 32nd International Conference on Machine Learning</em>. PMLR, 2015, 37: 2256–2265.</a></li>
+<li id="ref-5"><a href="https://arxiv.org/abs/1312.6114" target="_blank" rel="noreferrer">KINGMA D P, WELLING M. Auto-Encoding Variational Bayes （C）//<em>International Conference on Learning Representations</em>. 2014.</a></li>
+<li id="ref-6"><a href="https://papers.nips.cc/paper_files/paper/2014/hash/f033ed80deb0234979a61f95710dbe25-Abstract.html" target="_blank" rel="noreferrer">GOODFELLOW I J, POUGET-ABADIE J, MIRZA M, et al. Generative Adversarial Nets （C）//<em>Advances in Neural Information Processing Systems</em>. 2014, 27: 2672–2680.</a></li>
+<li id="ref-7"><a href="https://proceedings.neurips.cc/paper/2020/hash/4c5bcfec8584af0d967f1ab10179ca4b-Abstract.html" target="_blank" rel="noreferrer">HO J, JAIN A N, ABBEEL P. Denoising Diffusion Probabilistic Models （C）//<em>Advances in Neural Information Processing Systems</em>. 2020, 33: 6840–6851.</a></li>
+<li id="ref-8"><a href="https://iclr.cc/virtual/2021/poster/2804" target="_blank" rel="noreferrer">SONG J, MENG C, ERMON S. Denoising Diffusion Implicit Models （C）//<em>International Conference on Learning Representations</em>. 2021.</a></li>
+<li id="ref-9"><a href="https://doi.org/10.3390/app10134528" target="_blank" rel="noreferrer">LEE J Y, CHOI S I. Improvement of Learning Stability of Generative Adversarial Network Using Variational Learning （J/OL）. <em>Applied Sciences</em>, 2020, 10(13): 4528.</a></li>
+<li id="ref-10"><a href="https://proceedings.mlr.press/v48/larsen16.html" target="_blank" rel="noreferrer">LARSEN A B L, SØNDERBY S K, LAROCHELLE H, et al. Autoencoding beyond pixels using a learned similarity metric （C）//<em>Proceedings of the 33rd International Conference on Machine Learning</em>. PMLR, 2016, 48: 1558–1566.</a></li>
+<li id="ref-11"><a href="https://proceedings.mlr.press/v80/alemi18a.html" target="_blank" rel="noreferrer">ALEMI A, POOLE B, FISCHER I, et al. Fixing a Broken ELBO （C）//<em>Proceedings of the 35th International Conference on Machine Learning</em>. PMLR, 2018, 80: 159–168.</a></li>
+</ol></template>
+
+  <button class="back-to-top" type="button" aria-label="Back to top">↑</button>
+  <script src="assets/site.js"></script>
+</body>
+</html>

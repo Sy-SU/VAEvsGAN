@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A comparative reading report on Gaussian mixture models, VAEs, GANs, and diffusion models.">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0d151f" media="(prefers-color-scheme: dark)">
+  <title>From Traditional Generative Models to VAEs, GANs, and Diffusion Models</title>
+  <link rel="stylesheet" href="assets/homepage.css">
+  <script>
+    window.MathJax = {
+      tex: {inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], tags: 'ams'},
+      options: {skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']}
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"><span></span></div>
+  <header class="site-header">
+    <a class="brand" href="#report-title" aria-label="Back to the report title">
+      <span class="brand-mark">V/G</span>
+      <span>VAE vs GAN</span>
+    </a>
+    <nav class="header-links" aria-label="Page links">
+      <div class="language-switch" role="group" aria-label="Language">
+        <button type="button" data-language="en" aria-pressed="true">EN</button>
+        <span aria-hidden="true">/</span>
+        <button type="button" data-language="zh" aria-pressed="false">中文</button>
+      </div>
+      <a class="markdown-link" href="report.en.md">Markdown</a>
+      <a class="github-link" href="https://github.com/Sy-SU/VAEvsGAN" target="_blank" rel="noreferrer">GitHub ↗</a>
+    </nav>
+  </header>
+
+  <div class="page-shell">
+    <aside class="toc" aria-label="Report contents">
+      <p class="toc-label">Contents</p>
+      <nav class="toc-content">{{TOC_EN}}</nav>
+    </aside>
+
+    <main>
+      <article class="report-content">{{ARTICLE_EN}}</article>
+      <footer>
+        <span class="footer-label">Pattern Recognition Reading Report</span>
+        <span>·</span>
+        <span class="footer-project">VAEvsGAN Experimental Project</span>
+      </footer>
+    </main>
+  </div>
+
+  <template id="toc-zh">{{TOC_ZH}}</template>
+  <template id="article-zh">{{ARTICLE_ZH}}</template>
+
+  <button class="back-to-top" type="button" aria-label="Back to top">↑</button>
+  <script src="assets/site.js"></script>
+</body>
+</html>
