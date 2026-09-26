@@ -364,6 +364,11 @@ footer {
   .back-to-top { right: 12px; bottom: 14px; }
 }
 
+@media (max-width: 520px) {
+  .brand > span:last-child { display: none; }
+  .header-links { gap: 12px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition-duration: 0.01ms !important; }
