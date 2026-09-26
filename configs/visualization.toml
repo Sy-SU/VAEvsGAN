@@ -1,0 +1,18 @@
+[samples]
+vae_checkpoint = "models/vae.pt"
+gan_checkpoint = "models/gan.pt"
+samples_per_class = 8
+output = "outputs/comparison/conditional-samples.png"
+seed = 42
+device = "auto"
+
+[latent]
+data_dir = "data/MNIST"
+vae_checkpoint = "models/vae.pt"
+gan_checkpoint = "models/gan.pt"
+samples_per_class = 200
+batch_size = 256
+output = "outputs/comparison/latent-distribution.png"
+seed = 42
+num_workers = 0
+device = "auto"

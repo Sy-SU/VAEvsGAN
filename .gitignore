@@ -1,0 +1,7 @@
+data/
+models/
+outputs/
+.venv/
+__pycache__/
+*.py[cod]
+.vscode/

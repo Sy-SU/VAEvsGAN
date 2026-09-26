@@ -1,0 +1,15 @@
+name: vae
+
+channels:
+  - conda-forge
+
+dependencies:
+  - python=3.13
+  - pip
+  - pillow
+  - typing-extensions
+  - tqdm
+  - matplotlib
+  - pip:
+      - torch
+      - torchvision
