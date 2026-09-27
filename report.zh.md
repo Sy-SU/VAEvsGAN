@@ -395,6 +395,24 @@ VAE 还需要在信息保留与潜在分布约束之间进行权衡。重构项�
 
 此外，VAE 的无监督训练目标并不直接要求潜在表示具有良好的类别区分能力。模型能够较好地重构输入，并不意味着其潜在空间一定保留了最有利于分类的信息。对于模式识别任务，仅观察生成样本的视觉效果或比较重构误差，仍不足以评价潜在表示的有效性，还需要进一步考察其在真实分类任务中的表现[[11]](#ref-11)。
 
+<a id="sec:recent-research"></a>
+
+## 近期研究
+
+近年来，生成模型的研究仍然主要围绕如何更有效地学习复杂数据分布展开，但研究重点已经从单纯比较 VAE、GAN 和扩散模型等基本范式，逐渐转向模型结构的扩展能力、生成路径的设计以及训练和采样效率。特别是在图像生成领域，Transformer 架构、基于流匹配的模型和自回归模型成为重要研究方向。
+
+Peebles 和 Xie 在 ICCV 2023 发表的 Diffusion Transformer（DiT）将传统扩散模型中常用的 U-Net 去噪网络替换为 Transformer[[12]](#ref-12)。DiT 首先通过预训练 VAE 的编码器将图像压缩到潜在空间，再对潜在表示加噪并划分为若干图像块（patch），由 Transformer 根据带噪表示、时间步和类别条件预测噪声等去噪所需信息。论文实验表明，在所考察的模型规模下，增加 Transformer 的深度、宽度或输入图像块数量，提高单次前向计算量，能够改善生成性能。这项工作说明，扩散模型的生成原理并不依赖于 U-Net，去噪网络本身也可以采用具有较强扩展能力的 Transformer，为后续大规模生成模型提供了新的结构基础。
+
+在 DiT 的基础上，Ma 等人在 2024 年提出 Scalable Interpolant Transformers（SiT）[[13]](#ref-13)，进一步从生成过程的角度重新分析扩散模型。传统扩散模型通常预先规定由数据逐渐变为高斯噪声的加噪过程，而 SiT 使用随机插值（stochastic interpolant）框架描述数据分布与噪声分布之间的连续变化。该框架可以统一讨论离散时间与连续时间、确定性与随机采样以及不同概率路径等设计。SiT 在保持与 DiT 相同 Transformer 结构、参数规模和单次前向计算量的情况下取得了更好的 ImageNet 生成结果，说明除了扩大网络规模之外，如何设计从噪声分布到数据分布的变化路径同样会明显影响生成效果。
+
+除扩散和流模型外，自回归生成模型在近年的图像生成研究中也重新受到关注。Tian 等人在 NeurIPS 2024 提出的 Visual AutoRegressive Modeling（VAR）不再按照传统方法逐个预测图像 token，而是将图像生成重新定义为从低分辨率到高分辨率的“下一尺度预测”（next-scale prediction）[[14]](#ref-14)。模型首先生成较粗略的整体结构，再逐步预测更高尺度的表示，从而逐渐补充图像细节。这种方式保留了自回归模型通过条件概率分解描述数据分布的特点，同时通过并行预测同一尺度内的 token，缓解严格按照像素或 token 顺序逐个生成带来的效率问题。该工作表明，在扩散模型之外，自回归建模仍然是一条具有较强扩展能力的生成路线。
+
+近期研究还开始关注生成模型内部表示的学习效率。Yu 等人在 ICLR 2025 提出的 REPresentation Alignment（REPA）认为，大规模扩散模型不仅需要学习去噪过程，同时还需要在网络内部逐渐形成有效的视觉表示[[15]](#ref-15)。REPA 利用已经训练好的视觉编码器提供干净图像的表示，并约束扩散 Transformer 带噪输入对应的中间特征经过投影后与这些表示对齐。论文实验表明，这种额外的表示约束能够提高 DiT 和 SiT 等模型的训练效率，减少达到相近生成性能所需的训练步骤。这说明现代生成模型的训练不仅可以从概率建模和去噪目标本身改进，也可以利用已有的表示学习结果降低生成模型学习视觉结构的难度。
+
+另一方面，如何减少生成过程中的网络调用次数仍然是近期的重要问题。Geng 等人在 NeurIPS 2025 提出的 MeanFlow 从流模型的角度研究了一步生成问题[[16]](#ref-16)。通常的流匹配（Flow Matching）学习某个时间点上的瞬时速度，生成时利用数值积分多次调用网络；MeanFlow 则直接学习一段生成路径上的平均速度，并建立平均速度与瞬时速度之间的关系，以此指导训练。这样，生成网络可以从头训练，无须依赖预训练生成模型或蒸馏过程，即可实现一步生成。论文在 ImageNet \(256\times256\) 上使用一次生成网络计算得到图像的潜在表示，再由解码器恢复图像，展示了从多步数值积分向少步甚至一步生成发展的可行方向。
+
+从这些工作可以看出，近年来生成模型的发展已经不再表现为某一种范式简单取代另一种范式。扩散模型开始使用 Transformer 提高模型的扩展能力，基于流的生成方法重新设计噪声与数据之间的传输过程，自回归模型则探索更适合图像结构的生成顺序。同时，一步或少步生成以及更高效的表示学习也逐渐成为重要研究方向。由此可以看出，当前生成模型研究的重点正在从“能否学习复杂数据分布”进一步转向“如何以更具有扩展性和计算效率的方式学习并采样这一分布”。
+
 <a id="sec:research-directions"></a>
 
 ## 我的思考与可能的研究方向
@@ -442,3 +460,8 @@ VAE 还需要在信息保留与潜在分布约束之间进行权衡。重构项�
 9. [LEE J Y, CHOI S I. Improvement of Learning Stability of Generative Adversarial Network Using Variational Learning （J/OL）. *Applied Sciences*, 2020, 10(13): 4528.](https://doi.org/10.3390/app10134528)
 10. [LARSEN A B L, SØNDERBY S K, LAROCHELLE H, et al. Autoencoding beyond pixels using a learned similarity metric （C）//*Proceedings of the 33rd International Conference on Machine Learning*. PMLR, 2016, 48: 1558–1566.](https://proceedings.mlr.press/v48/larsen16.html)
 11. [ALEMI A, POOLE B, FISCHER I, et al. Fixing a Broken ELBO （C）//*Proceedings of the 35th International Conference on Machine Learning*. PMLR, 2018, 80: 159–168.](https://proceedings.mlr.press/v80/alemi18a.html)
+12. [PEEBLES W, XIE S. Scalable Diffusion Models with Transformers （C）//*Proceedings of the IEEE/CVF International Conference on Computer Vision*. 2023: 4195–4205.](https://openaccess.thecvf.com/content/ICCV2023/html/Peebles_Scalable_Diffusion_Models_with_Transformers_ICCV_2023_paper.html)
+13. [MA N, GOLDSTEIN M, ALBERGO M S, et al. SiT: Exploring Flow and Diffusion-Based Generative Models with Scalable Interpolant Transformers （C/OL）//*Computer Vision – ECCV 2024*. Cham: Springer, 2024, 15135: 23–40.](https://www.ecva.net/papers/eccv_2024/papers_ECCV/html/9828_ECCV_2024_paper.php)
+14. [TIAN K, JIANG Y, YUAN Z, et al. Visual Autoregressive Modeling: Scalable Image Generation via Next-Scale Prediction （C/OL）//*Advances in Neural Information Processing Systems*. 2024, 37: 84839–84865.](https://proceedings.neurips.cc/paper_files/paper/2024/hash/9a24e284b187f662681440ba15c416fb-Abstract-Conference.html)
+15. [YU S, KWAK S, JANG H, et al. Representation Alignment for Generation: Training Diffusion Transformers Is Easier Than You Think （C）//*International Conference on Learning Representations*. 2025: 87400–87442.](https://proceedings.iclr.cc/paper_files/paper/2025/hash/d9e42b4d7163931f3689d6d6fbaa11d0-Abstract-Conference.html)
+16. [GENG Z, DENG M, BAI X, et al. Mean Flows for One-step Generative Modeling （C/OL）//*Advances in Neural Information Processing Systems*. 2025, 38: 75460–75482.](https://papers.neurips.cc/paper_files/paper/2025/hash/6d13e085b79d454da5910e4ca82a3d9d-Abstract-Conference.html)

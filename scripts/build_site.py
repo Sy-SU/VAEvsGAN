@@ -21,6 +21,11 @@ CITATION_ORDER = [
     "lee2020variational-learning",
     "larsen2016autoencoding",
     "alemi2018broken-elbo",
+    "peebles2023dit",
+    "ma2024sit",
+    "tian2024var",
+    "yu2025repa",
+    "geng2025meanflow",
 ]
 
 REFERENCES = [
@@ -35,6 +40,11 @@ REFERENCES = [
     "LEE J Y, CHOI S I. Improvement of Learning Stability of Generative Adversarial Network Using Variational Learning [J/OL]. *Applied Sciences*, 2020, 10(13): 4528. [DOI](https://doi.org/10.3390/app10134528)",
     "LARSEN A B L, SØNDERBY S K, LAROCHELLE H, et al. Autoencoding beyond pixels using a learned similarity metric [C]//*Proceedings of the 33rd International Conference on Machine Learning*. PMLR, 2016, 48: 1558–1566. [论文页面](https://proceedings.mlr.press/v48/larsen16.html)",
     "ALEMI A, POOLE B, FISCHER I, et al. Fixing a Broken ELBO [C]//*Proceedings of the 35th International Conference on Machine Learning*. PMLR, 2018, 80: 159–168. [论文页面](https://proceedings.mlr.press/v80/alemi18a.html)",
+    "PEEBLES W, XIE S. Scalable Diffusion Models with Transformers [C]//*Proceedings of the IEEE/CVF International Conference on Computer Vision*. 2023: 4195–4205. [论文页面](https://openaccess.thecvf.com/content/ICCV2023/html/Peebles_Scalable_Diffusion_Models_with_Transformers_ICCV_2023_paper.html)",
+    "MA N, GOLDSTEIN M, ALBERGO M S, et al. SiT: Exploring Flow and Diffusion-Based Generative Models with Scalable Interpolant Transformers [C/OL]//*Computer Vision – ECCV 2024*. Cham: Springer, 2024, 15135: 23–40. [论文页面](https://www.ecva.net/papers/eccv_2024/papers_ECCV/html/9828_ECCV_2024_paper.php)",
+    "TIAN K, JIANG Y, YUAN Z, et al. Visual Autoregressive Modeling: Scalable Image Generation via Next-Scale Prediction [C/OL]//*Advances in Neural Information Processing Systems*. 2024, 37: 84839–84865. [论文页面](https://proceedings.neurips.cc/paper_files/paper/2024/hash/9a24e284b187f662681440ba15c416fb-Abstract-Conference.html)",
+    "YU S, KWAK S, JANG H, et al. Representation Alignment for Generation: Training Diffusion Transformers Is Easier Than You Think [C]//*International Conference on Learning Representations*. 2025: 87400–87442. [论文页面](https://proceedings.iclr.cc/paper_files/paper/2025/hash/d9e42b4d7163931f3689d6d6fbaa11d0-Abstract-Conference.html)",
+    "GENG Z, DENG M, BAI X, et al. Mean Flows for One-step Generative Modeling [C/OL]//*Advances in Neural Information Processing Systems*. 2025, 38: 75460–75482. [论文页面](https://papers.neurips.cc/paper_files/paper/2025/hash/6d13e085b79d454da5910e4ca82a3d9d-Abstract-Conference.html)",
 ]
 
 
@@ -44,6 +54,7 @@ def link_entire_reference(reference: str) -> str:
         return reference
     label, url = match.groups()
     label = label.replace("[M]", "（M）")
+    label = label.replace("[C/OL]", "（C/OL）")
     label = label.replace("[J/OL]", "（J/OL）")
     label = label.replace("[C]", "（C）")
     return f"[{label}]({url})"
@@ -463,6 +474,7 @@ def main() -> None:
         format_references()
         .replace("（M）", "(M)")
         .replace("（J/OL）", "(J/OL)")
+        .replace("（C/OL）", "(C/OL)")
         .replace("（C）", "(C)")
     )
     english += (
