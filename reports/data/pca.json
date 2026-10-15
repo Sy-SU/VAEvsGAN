@@ -1,0 +1,8 @@
+{
+  "fit_split": "train",
+  "samples": 50000,
+  "explained_variance_ratio": [
+    0.20348830507273855,
+    0.1717292580925549
+  ]
+}

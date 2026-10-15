@@ -1,0 +1,87 @@
+{
+  "device": "cpu",
+  "torch_version": "2.14.0+cu130",
+  "checks": [
+    {
+      "name": "distribution_formulas_and_pr_direction",
+      "passed": true,
+      "seconds": 0.0070919330000833725,
+      "details": {
+        "asymmetric_precision": 1.0,
+        "asymmetric_recall": 0.0,
+        "retained_negative_mmd2": -31.166666666666664,
+        "numpy_reference": "passed"
+      }
+    },
+    {
+      "name": "macro_and_confusion",
+      "passed": true,
+      "seconds": 0.002178727000227809,
+      "details": {
+        "expected_macro_accuracy": 0.95,
+        "micro_accuracy_for_contrast": 0.9090909090909091,
+        "confusion_count": 44
+      }
+    },
+    {
+      "name": "rng_restoration",
+      "passed": true,
+      "seconds": 0.0541799570000876,
+      "details": {
+        "normal_exit": "passed",
+        "exceptional_exit": "passed",
+        "cuda_generators_checked": 0
+      }
+    },
+    {
+      "name": "evaluator_features",
+      "passed": true,
+      "seconds": 0.009109265999995841,
+      "details": {
+        "feature_shape": [
+          5,
+          128
+        ],
+        "parameters": 421642
+      }
+    },
+    {
+      "name": "generation_isolation",
+      "passed": true,
+      "seconds": 0.03178341000011642,
+      "details": {
+        "modes": [
+          "vae:train",
+          "vae:eval",
+          "gan:train",
+          "gan:eval"
+        ],
+        "global_rng": "unchanged",
+        "gan_batchnorm_buffers": "unchanged"
+      }
+    },
+    {
+      "name": "existing_checkpoint_compatibility_cpu",
+      "passed": true,
+      "seconds": 0.014875824000228022,
+      "details": {
+        "loaded_and_generated_on_cpu": [
+          {
+            "model": "vae",
+            "epoch": 20,
+            "latent_dim": 20,
+            "path": "models/vae.pt"
+          },
+          {
+            "model": "gan",
+            "epoch": 50,
+            "latent_dim": 20,
+            "path": "models/gan.pt"
+          }
+        ],
+        "skipped_missing_checkpoints": []
+      }
+    }
+  ],
+  "passed": true
+}

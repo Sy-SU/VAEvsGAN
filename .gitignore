@@ -5,3 +5,7 @@ outputs/
 __pycache__/
 *.py[cod]
 .vscode/
+
+# Keep the report's small, reproducible result tables under version control.
+!reports/data/
+!reports/data/**

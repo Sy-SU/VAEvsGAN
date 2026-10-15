@@ -1,5 +1,36 @@
 # MNIST 条件生成模型：VAE 与 DCGAN
 
+## 可复现对比实验
+
+`configs/comparison.toml` 固定三种子、50k/10k 训练验证划分和共同 MNIST 评估器。
+同为 20 epoch 的 VAE/GAN 是主对照，GAN 50 epoch 是默认预算补充。
+
+```bash
+python tools/compare.py --stage all
+```
+
+可分别使用 `--stage train`、`--stage evaluate`、`--stage report`；报告阶段仅需 CPU。
+`--config` 接受独立 TOML 配置，路径相对仓库根目录解析。实验中断后以同一配置重新
+执行训练会恢复模型、优化器和随机数状态；已完成的训练会复用。新协议应使用新的
+`study.run_dir`，避免混用结果。现有训练和生成命令仍可独立使用。
+
+正式结果保存到 `outputs/comparison-study/`，中文报告与图表保存到
+[完整实验报告](reports/comparison.md)。报告包含三种子结果、27 张对比图与原始指标表。
+模型权重不放进报告目录。
+
+```bash
+# 隔离的小规模真实数据验证；输出到独立的 comparison-study-smoke 目录
+python tools/compare.py --smoke --stage all
+# 核查指标公式、随机数隔离、模型状态与旧权重兼容性
+python tools/check_comparison.py --device cpu
+python tools/check_comparison.py --device cuda
+```
+
+烟雾验证不代表正式实验结果。源 PNG 首次加载后会无损缓存到
+`outputs/comparison-data/`；更换源数据时请使用新的缓存或删除该缓存后重建。
+
+---
+
 这是一个使用 PyTorch 实现的 MNIST 条件生成项目，目前包含条件卷积变分自编码器（Conditional VAE）和条件深度卷积生成对抗网络（Conditional DCGAN）。两种模型在训练时都使用 MNIST 标签作为条件，生成时可以输入 `0` 到 `9` 中的数字，引导模型生成对应类别的不同手写图片。
 
 训练、测试和生成分别由 `tools/train.py`、`tools/test.py` 和 `tools/generate.py` 提供。第一个位置参数选择 `vae` 或 `gan`，三个工具通过公共模型工作流接口分发任务。

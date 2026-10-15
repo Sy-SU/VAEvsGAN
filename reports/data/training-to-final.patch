@@ -1,0 +1,19 @@
+--- training_snapshot
++++ final_source
+@@ -5,7 +5,6 @@
+ """
+ from __future__ import annotations
+ 
+-import copy
+ import csv
+ import hashlib
+ import json
+@@ -395,7 +394,7 @@
+     torch.set_num_threads(study["cpu_threads"])
+     torch.backends.cuda.matmul.allow_tf32 = False
+     torch.backends.cudnn.allow_tf32 = False
+-    device = resolve_device(study["device"])
++    device = torch.device("cpu") if stage == "report" else resolve_device(study["device"])
+     if (run_dir / "config.json").exists() and read_json(run_dir / "config.json") != cfg:
+         raise ValueError("Study configuration changed; choose a new run_dir")
+     write_json(run_dir / "config.json", cfg)

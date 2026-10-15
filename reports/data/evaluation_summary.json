@@ -1,0 +1,44 @@
+{
+  "wall_seconds": 8.488781515000028,
+  "test_accuracy": 0.9896000027656555,
+  "pca": {
+    "fit_split": "train",
+    "samples": 50000,
+    "explained_variance_ratio": [
+      0.20348830507273855,
+      0.1717292580925549
+    ]
+  },
+  "visual_diagnostics": {
+    "VAE20": {
+      "seed": 42,
+      "label_switch_accuracy": 0.8500000238418579,
+      "interpolation_accuracy": 0.9363636374473572,
+      "interpolation_adjacent_pixel_l1": 0.0131867416203022,
+      "nearest_distance_mean": 13.30185317993164,
+      "nearest_distance_median": 13.104738235473633,
+      "displayed_failure_count": 20,
+      "sampling_rule": "predeclared first indices; interpolation and label switching use separate fixed seeds"
+    },
+    "GAN20": {
+      "seed": 42,
+      "label_switch_accuracy": 1.0,
+      "interpolation_accuracy": 1.0,
+      "interpolation_adjacent_pixel_l1": 0.016705509275197983,
+      "nearest_distance_mean": 11.014973640441895,
+      "nearest_distance_median": 11.010825157165527,
+      "displayed_failure_count": 5,
+      "sampling_rule": "predeclared first indices; interpolation and label switching use separate fixed seeds"
+    },
+    "GAN50": {
+      "seed": 42,
+      "label_switch_accuracy": 1.0,
+      "interpolation_accuracy": 1.0,
+      "interpolation_adjacent_pixel_l1": 0.016205763444304466,
+      "nearest_distance_mean": 10.444432258605957,
+      "nearest_distance_median": 10.475556373596191,
+      "displayed_failure_count": 6,
+      "sampling_rule": "predeclared first indices; interpolation and label switching use separate fixed seeds"
+    }
+  }
+}

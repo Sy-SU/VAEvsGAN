@@ -1,0 +1,17 @@
+{
+  "elapsed_seconds": 8.486631196999951,
+  "samples_per_class": 800,
+  "sampling_seed": 1729,
+  "feature_space": "raw frozen MNIST classifier 128-dimensional ReLU features",
+  "kernel": "(x dot y / 128 + 1)^3; unbiased MMD squared; negative values retained",
+  "precision_recall": "k=3, Euclidean balls, self excluded, macro over requested class",
+  "evaluator_checkpoint_sha256": "60db1be7b4e82794b8123acfd1b2c0af000287a506cfb06cb935a934d4ea4d88",
+  "visuals_sha256": "6a4aef1495dd5d61ff3ad7a97b596210a5ee2078a4aa55811ee0a7b526ceb155",
+  "source_sha256": {
+    "generative/comparison_metrics.py": "06f67f1bafc2089ef372a30b1768be6454ef3bb33e5e2d714887c0c3b525a730",
+    "generative/comparison_evaluate.py": "06bcad414c35bbbf12a94a6036e66a4c8fa77151b59ac6da732019127a061ecb",
+    "generative/comparison_report.py": "ab65379f9fb4959deb711ec1fa8a36dc3594e2b3527d39a7d860c9958e36327e",
+    "generative/comparison_study.py": "24cb9f098b8735b34fa51e12fefa3e7288729a80dc26a799cc297bcc341c0752",
+    "generative/comparison_plots.py": "31ee469d7d4fed8183826c3ac03dea0597139222740ec255334143ed7ba8cf05"
+  }
+}

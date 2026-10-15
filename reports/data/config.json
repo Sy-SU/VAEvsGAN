@@ -1,0 +1,62 @@
+{
+  "study": {
+    "data_dir": "/home/susenyang/github-repos/VAEvsGAN/data/MNIST",
+    "run_dir": "/home/susenyang/github-repos/VAEvsGAN/outputs/comparison-study",
+    "report_dir": "/home/susenyang/github-repos/VAEvsGAN/reports",
+    "device": "cuda",
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "split_seed": 20261010,
+    "validation_size": 10000,
+    "batch_size": 128,
+    "latent_dim": 20,
+    "cpu_threads": 4,
+    "process_samples_per_class": 200,
+    "final_samples_per_class": 800,
+    "sampling_seed": 1729,
+    "scales": [
+      0.5,
+      1.0,
+      1.5,
+      2.0
+    ]
+  },
+  "evaluator": {
+    "seed": 20261011,
+    "epochs": 10,
+    "learning_rate": 0.001
+  },
+  "vae": {
+    "epochs": 20,
+    "learning_rate": 0.001,
+    "evaluation_epochs": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ]
+  },
+  "gan": {
+    "epochs": 50,
+    "learning_rate": 0.0002,
+    "adam_beta1": 0.5,
+    "adam_beta2": 0.999,
+    "label_embedding_dim": 50,
+    "conditional_negative_weight": 0.5,
+    "evaluation_epochs": [
+      1,
+      5,
+      10,
+      15,
+      20,
+      30,
+      40,
+      50
+    ]
+  },
+  "smoke": false
+}
