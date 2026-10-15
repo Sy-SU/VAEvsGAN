@@ -12,7 +12,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from build_site import render_markdown
+from build_site import build_html
 
 
 def prepare_markdown(markdown: str) -> str:
@@ -47,15 +47,35 @@ def build(source: Path, output: Path) -> None:
         if actual != expected:
             raise ValueError(f"Report artifact checksum mismatch: {name}")
     markdown = (report / "comparison.md").read_text(encoding="utf-8")
-    article, toc = render_markdown(prepare_markdown(markdown))
+    english = (output / "translations/comparison.en.md").read_text(encoding="utf-8")
+    translation_source = json.loads(
+        (output / "translations/comparison.source.json").read_text(encoding="utf-8")
+    )
+    if translation_source["source_sha256"] != manifest["report_sha256"]:
+        raise ValueError("English translation is out of date; update it against the current Chinese report")
+    # Preserve structure, evidence links, exact equations, and every numeric table cell.
+    patterns = {
+        "headings": r"^(#{2,3}) ",
+        "links": r"!?\[[^\]]*\]\(([^)]+)\)",
+        "display equations": r"^\$\$(.+)\$\$$",
+        "inline equations": r"(?<!\$)\$([^$\n]+)\$(?!\$)",
+    }
+    for label, pattern in patterns.items():
+        if re.findall(pattern, markdown, re.M) != re.findall(pattern, english, re.M):
+            raise ValueError(f"Translation differs in {label}")
+    number = r"\d+(?:[,\.]\d+)*(?:e[+-]?\d+)?"
+    table_numbers = lambda text: [re.findall(number, line) for line in text.splitlines() if line.startswith("|")]
+    if table_numbers(markdown) != table_numbers(english):
+        raise ValueError("Translation differs in numeric table values")
     template = (output / "comparison-template.html").read_text(encoding="utf-8")
-    rendered = template.replace("{{ARTICLE}}", article).replace("{{TOC}}", toc)
+    rendered = build_html(prepare_markdown(english), prepare_markdown(markdown), template)
     target = output / "comparison"
     for name in [*hashes, "data/manifest.json"]:
         destination = target / name
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(report / name, destination)
     (target / "index.html").write_text(rendered, encoding="utf-8")
+    (target / "comparison.en.md").write_text(english, encoding="utf-8")
     source_commit = subprocess.check_output(
         ["git", "-C", str(source), "rev-parse", "HEAD"], text=True
     ).strip()
@@ -63,6 +83,7 @@ def build(source: Path, output: Path) -> None:
         "repository": "https://github.com/Sy-SU/VAEvsGAN",
         "source_commit": source_commit,
         "report_sha256": manifest["report_sha256"],
+        "english_report_sha256": hashlib.sha256(english.encode("utf-8")).hexdigest(),
     }, indent=2) + "\n", encoding="utf-8")
     print(f"Published {len(hashes) + 1} verified report files to {target}")
 

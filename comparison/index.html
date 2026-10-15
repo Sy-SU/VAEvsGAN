@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="MNIST 条件 VAE 与 GAN 的三种子实验：生成质量、覆盖、条件控制与效率的完整对比报告。">
+  <meta name="description" content="A three-seed comparison of conditional VAE and GAN on MNIST: generation quality, coverage, conditional control, and efficiency.">
   <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0d151f" media="(prefers-color-scheme: dark)">
-  <title>MNIST 条件 VAE 与 GAN：对比实验</title>
+  <title>Conditional VAE vs GAN on MNIST: Comparison Study</title>
   <link rel="stylesheet" href="../assets/homepage.css">
   <script>
     window.MathJax = {
@@ -16,23 +16,352 @@
   </script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
-<body>
+<body data-report="comparison">
+  <div class="reading-progress" aria-hidden="true"><span></span></div>
   <header class="site-header">
-    <a class="brand" href="#report-title" aria-label="返回报告顶部">
+    <a class="brand" href="#report-title" aria-label="Back to the report title">
       <span class="brand-mark">V/G</span>
       <span>VAE vs GAN</span>
     </a>
-    <nav class="header-links" aria-label="页面链接">
-      <a href="../">读书报告</a>
-      <a class="markdown-link" href="comparison.md">Markdown</a>
+    <nav class="header-links" aria-label="Page links">
+      <div class="language-switch" role="group" aria-label="Language">
+        <button type="button" data-language="en" aria-pressed="true">EN</button>
+        <span aria-hidden="true">/</span>
+        <button type="button" data-language="zh" aria-pressed="false">中文</button>
+      </div>
+      <a class="reading-link" href="../?lang=en">Reading Report</a>
+      <a class="markdown-link" href="comparison.en.md">Markdown</a>
       <a class="github-link" href="https://github.com/Sy-SU/VAEvsGAN" target="_blank" rel="noreferrer">GitHub</a>
       <a class="home-link" href="https://sy-su.github.io/">Home</a>
     </nav>
   </header>
   <div class="page-shell">
-    <aside class="toc" aria-label="实验报告目录">
-      <p class="toc-label">目录</p>
-      <nav class="toc-content"><a class="toc-section" href="#section-1">1. 主要结果：分别回答两种预算下的比较</a>
+    <aside class="toc" aria-label="Comparison study contents">
+      <p class="toc-label">Contents</p>
+      <nav class="toc-content"><a class="toc-section" href="#section-1">1. Main results: two separate training budgets</a>
+<a class="toc-sub" href="#section-2">Equal data passes: VAE20 vs GAN20</a>
+<a class="toc-sub" href="#section-3">Default training settings: VAE20 vs GAN50</a>
+<a class="toc-sub" href="#section-4">The same GAN from 20 to 50 epochs</a>
+<a class="toc-section" href="#section-5">2. Shared protocol and interpretation of the metrics</a>
+<a class="toc-sub" href="#section-6">Metric definitions</a>
+<a class="toc-section" href="#section-7">3. Generation across all classes and conditional control</a>
+<a class="toc-section" href="#section-8">4. Generation quality, within-class coverage, and a shared feature space</a>
+<a class="toc-section" href="#section-9">5. Training efficiency, stability, and generation speed</a>
+<a class="toc-section" href="#section-10">6. Latent interpolation and label switching</a>
+<a class="toc-section" href="#section-11">7. Sampling scale: changes in correctness and coverage</a>
+<a class="toc-section" href="#section-12">8. Nearest neighbors and failure cases</a>
+<a class="toc-section" href="#section-13">9. Limitations and reproduction</a>
+<a class="toc-sub" href="#section-14">Recorded runtime environment</a>
+<a class="toc-sub" href="#section-15">Validation and artifact integrity</a>
+<a class="toc-sub" href="#section-16">Raw records and integrity</a>
+<a class="toc-section" href="#section-17">Appendix: other training seeds and supplementary figures</a></nav>
+    </aside>
+    <main>
+      <article class="report-content"><h1 id="report-title">Conditional VAE vs GAN on MNIST: Quality, Coverage, Control, and Efficiency</h1>
+<p>Experiment started: 2026-10-10 17:53 (Asia/Shanghai). This report was generated from saved model weights and evaluation results. The dataset is MNIST, and the generative models are this repository's existing conditional convolutional VAE and conditional DCGAN. The formal study comprises 6 training runs with random seeds 42, 43, and 44.</p>
+<h2 id="section-1">1. Main results: two separate training budgets</h2>
+<p>The table reports the mean ± <strong>sample standard deviation</strong> (ddof=1) across independent training seeds. Standard deviations accompanying percentages are expressed in percentage points. Higher condition accuracy, precision, and recall are better; lower MMD² is better. Training time is measured in seconds. Error bars describe variation across training seeds, not confidence intervals.</p>
+<div class="table-wrap"><table><thead><tr>
+<th>Checkpoint</th>
+<th>Condition accuracy ↑</th>
+<th>MMD² ↓</th>
+<th>Distribution precision ↑</th>
+<th>Distribution recall ↑</th>
+<th>Cumulative training seconds</th>
+</tr></thead><tbody>
+<tr><td>VAE20</td><td>89.32 ± 0.35%</td><td>3589.6 ± 62</td><td>71.70 ± 0.40%</td><td>54.00 ± 1.33%</td><td>26.12 ± 0.11</td></tr>
+<tr><td>GAN20</td><td>99.92 ± 0.02%</td><td>442.79 ± 113</td><td>73.98 ± 1.02%</td><td>43.43 ± 2.36%</td><td>60.96 ± 0.57</td></tr>
+<tr><td>GAN50</td><td>99.94 ± 0.01%</td><td>300.65 ± 96.8</td><td>80.76 ± 1.14%</td><td>51.02 ± 4.32%</td><td>152.10 ± 1.36</td></tr>
+</tbody></table></div>
+<p>For the comparison at 20 epochs, the direct answer is: <strong>GAN20 has higher condition accuracy and lower feature-distribution MMD²; VAE20 has higher coverage recall, trains faster, and generates images at higher throughput.</strong> These findings concern different measurement axes. Numerical results and evidence for each seed are retained below, so an advantage on one axis is not treated as superiority in every respect.</p>
+<p>At 20 epochs, different models lead on precision and recall, revealing a practical tradeoff between indications of quality and coverage. The proximity of generated images to the real distribution and the coverage of real digit shapes should be assessed separately according to the intended use.</p>
+<p>MMD² and coverage recall also produce different rankings. This disagreement remains part of the conclusions: the former measures similarity in kernel feature statistics, while the latter measures coverage of real samples by nearest-neighbor balls. Neither can substitute for the other.</p>
+<h3 id="section-2">Equal data passes: VAE20 vs GAN20</h3>
+<p><strong>GAN20 relative to VAE20</strong>: condition accuracy increases by 10.60 percentage points (a favorable change for 3/3 matching seed identifiers); MMD² decreases by 3146.9 (favorable for 3/3); distribution precision increases by 2.29 percentage points (favorable for 3/3); and distribution recall decreases by 10.57 percentage points (favorable for 0/3). These are descriptive results for a predefined comparison. Three seeds do not justify a claim of statistical significance.</p>
+<p>At 20 epochs, both models have seen the same number of training examples. However, the GAN alternates generator and discriminator updates within each batch, and the network sizes differ. This comparison therefore does not represent an equal compute budget.</p>
+<h3 id="section-3">Default training settings: VAE20 vs GAN50</h3>
+<p><strong>GAN50 relative to VAE20</strong>: condition accuracy increases by 10.62 percentage points (a favorable change for 3/3 matching seed identifiers); MMD² decreases by 3289 (favorable for 3/3); distribution precision increases by 9.07 percentage points (favorable for 3/3); and distribution recall decreases by 2.98 percentage points (favorable for 1/3). These are descriptive results for a predefined comparison. Three seeds do not justify a claim of statistical significance.</p>
+<h3 id="section-4">The same GAN from 20 to 50 epochs</h3>
+<p><strong>GAN50 relative to GAN20</strong>: condition accuracy increases by 0.02 percentage points (a favorable change for 2/3 matching seed identifiers); MMD² decreases by 142.14 (favorable for 2/3); distribution precision increases by 6.78 percentage points (favorable for 3/3); and distribution recall increases by 7.59 percentage points (favorable for 3/3). These are descriptive results for a predefined comparison. Three seeds do not justify a claim of statistical significance.</p>
+<p>More training does not consistently improve every seed: for seed 44, MMD² rises from 370.707 to 406.700. Although the average across seeds may improve, individual trajectories can still deteriorate or fluctuate. It would be inaccurate to claim that 50 epochs outperform 20 epochs in every run.</p>
+<p>GAN20 consists of intermediate checkpoints from the three GAN50 training runs, not three additional runs. The report uses two predefined checkpoints; the best epoch was not selected using test results. See <a href="data/per_seed.csv" target="_blank" rel="noreferrer">per_seed.csv</a> for all results by seed and <a href="data/per_class.csv" target="_blank" rel="noreferrer">per_class.csv</a> for results by class.</p>
+<figure>
+<a href="figures/generation_metrics.png"><img src="figures/generation_metrics.png" alt="generation_metrics" loading="lazy" decoding="async"></a>
+</figure>
+<p>Generation metrics for each training seed, with the mean ± sample standard deviation. Standard deviations are computed across independent training seeds.</p>
+<h2 id="section-5">2. Shared protocol and interpretation of the metrics</h2>
+<p>The original MNIST training set is divided into a fixed stratified split of 50,000 training images and 10,000 validation images, using split seed 20261010. The official test set is used only for final evaluation. Intermediate evaluations use a fixed sample of 200 validation images per class; final evaluations use a fixed sample of 800 test images per class, with the same number of generated images per class. Reference indices and the full split are saved with the report. Test metrics were not used for model selection during training.</p>
+<div class="table-wrap"><table><thead><tr>
+<th>Setting</th>
+<th>VAE</th>
+<th>GAN</th>
+</tr></thead><tbody>
+<tr><td>Epochs</td><td>20</td><td>50</td></tr>
+<tr><td>Latent dimension / batch size</td><td>20 / 128</td><td>20 / 128</td></tr>
+<tr><td>Adam learning rate</td><td>0.001</td><td>0.0002</td></tr>
+<tr><td>Adam betas</td><td>(0.9, 0.999)</td><td>(0.5, 0.999)</td></tr>
+<tr><td>Label representation</td><td>10-dimensional one-hot</td><td>50-dimensional embedding</td></tr>
+<tr><td>Native training objective</td><td>Per-sample mean BCE reconstruction term + KL</td><td>D: real + 0.5×(fake+wrong-label); G: real-target BCE</td></tr>
+</tbody></table></div>
+<p>All images are original 28×28 grayscale images, without data augmentation. Existing PNG files are cached losslessly as uint8 and divided by 255 after loading. GAN training further maps them to [−1,1]; evaluation outputs are consistently mapped back to [0,1]. Both models retain their original architectures, initialization, and loss functions. The last incomplete batch is retained in every epoch.</p>
+<p>The shared classifier consists of two 3×3 convolutional layers (32/64 channels, padding=1, each followed by ReLU and 2×2 max pooling), a 128-dimensional ReLU feature layer, and a ten-class output. It is trained only on the same training split, using Adam with learning rate 0.001 and batch size 128 for 10 epochs. The weights with the best validation accuracy are saved and frozen. The best validation accuracy is <strong>99.050%</strong>, and accuracy on the full official test set is <strong>98.960%</strong>. Classifier errors and feature preferences can still affect the evaluation of generated images; classifier judgments are not identical to human assessments of visual quality.</p>
+<h3 id="section-6">Metric definitions</h3>
+<p><strong>Condition accuracy</strong>: whether the classifier's prediction equals the requested label y. This measures adherence to the condition; it does not independently assess naturalness or diversity within a class. The distribution metrics below group generated images by their <strong>requested labels</strong> and real images by their true labels, then average equally across the ten digits. Generated images classified incorrectly are not filtered out first.</p>
+<p><strong>MNIST feature MMD²</strong>: computed on the frozen classifier's 128-dimensional features, before any PCA projection, using \(k(x,y)=(x^\top y/128+1)^3\). The unbiased estimator is</p>
+<div class="math-display">\[\widehat{\mathrm{MMD}}_u^2=\frac{\sum_{i\ne j}k(x_i,x_j)}{m(m-1)}+\frac{\sum_{i\ne j}k(z_i,z_j)}{n(n-1)}-\frac{2\sum_{i,j}k(x_i,z_j)}{mn}.\]</div>
+<p>This kernel distance follows the KID evaluation idea in <a href="https://arxiv.org/abs/1801.01401" target="_blank" rel="noreferrer">Bińkowski et al., Demystifying MMD GANs, ICLR 2018</a>. Because this experiment replaces the feature extractor, the metric is called MNIST feature MMD². It should not be treated as standard Inception KID or directly compared with published scores for that metric. An unbiased finite-sample estimate can be negative, so the original value is retained. Its absolute magnitude also depends on the feature scale.</p>
+<p><strong>Distribution precision / recall</strong>: based on the nearest-neighbor ball coverage approach in <a href="https://proceedings.neurips.cc/paper/2019/hash/0234c510bc6d908b28c70ff313743079-Abstract.html" target="_blank" rel="noreferrer">Kynkäänniemi et al., Improved Precision and Recall Metric, NeurIPS 2019</a>. Each feature point defines a ball whose radius is the distance to its 3rd other nearest neighbor. The union of these balls approximates the distribution's support. Precision is the fraction of generated points inside the union of real-data balls; recall is the fraction of real points inside the union of generated-data balls. Both are computed in the 128-dimensional space. High precision and high recall provide indications of quality and coverage, respectively, and can trade off against each other. They are not classification precision/recall and do not fully describe visual quality or the diversity of all handwriting styles. Sample size, outliers, and the feature space all affect these estimates.</p>
+<h2 id="section-7">3. Generation across all classes and conditional control</h2>
+<figure>
+<a href="figures/samples_digits_0_4.png"><img src="figures/samples_digits_0_4.png" alt="samples_digits_0_4" loading="lazy" decoding="async"></a>
+</figure>
+<p>Sample grids covering all digit classes, showing real MNIST images and the three model checkpoints. Sampling seeds are fixed; examples are not selected according to generation quality.</p>
+<figure>
+<a href="figures/samples_digits_5_9.png"><img src="figures/samples_digits_5_9.png" alt="samples_digits_5_9" loading="lazy" decoding="async"></a>
+</figure>
+<p>Sample grids covering all digit classes, showing real MNIST images and the three model checkpoints. Sampling seeds are fixed; examples are not selected according to generation quality.</p>
+<p>The main figures use training seed 42 and show the first 8 fixed indices per class for real samples and each checkpoint. Images are not filtered by classifier confidence or visual quality. Each row corresponds to a requested label, and columns show different samples from that class. In addition to class correctness, compare stroke continuity, repeated shapes, and grayscale edges against the real images. Grids for the other two training seeds follow the same selection rule and appear in the appendix.</p>
+<p><strong>Visual observations of fixed samples:</strong> In the grid for seed 42, the VAE shows more gray edges and locally weak strokes. The 4th and 7th images requested as digit 5 contain closed loops that look more like 9 and 6. The GAN grids have more consistent class appearance and clearer edges, although some examples of digit 6 still contain thick, merged strokes. These are individual examples to be considered alongside aggregate metrics; impressions from 8 samples cannot replace population statistics.</p>
+<figure>
+<a href="figures/condition_confusion.png"><img src="figures/condition_confusion.png" alt="condition_confusion" loading="lazy" decoding="async"></a>
+</figure>
+<p>Conditional confusion matrices, normalized by requested-digit row within each training seed and then averaged across seeds. Cell values are percentages.</p>
+<figure>
+<a href="figures/per_digit_accuracy.png"><img src="figures/per_digit_accuracy.png" alt="per_digit_accuracy" loading="lazy" decoding="async"></a>
+</figure>
+<p>Condition accuracy for each digit and variation across training seeds, so overall averages do not conceal weaker classes.</p>
+<p><strong>VAE20</strong>: the digit with the lowest condition accuracy is 8 (mean across seeds: 80.62%), and the highest is 3 (95.12%). Pooling the seeds, the largest off-diagonal confusion is requested 8, predicted 3: 210 images, or 8.75% of requests for 8. This is a judgment by the frozen classifier. Failure examples should be inspected to distinguish ambiguous shapes from classifier misrecognition.</p>
+<p><strong>GAN20</strong>: the digit with the lowest condition accuracy is 9 (mean across seeds: 99.67%), and the highest is 0 (100.00%). Pooling the seeds, the largest off-diagonal confusion is requested 2, predicted 3: 3 images, or 0.12% of requests for 2. This is a judgment by the frozen classifier. Failure examples should be inspected to distinguish ambiguous shapes from classifier misrecognition.</p>
+<p><strong>GAN50</strong>: the digit with the lowest condition accuracy is 2 (mean across seeds: 99.88%), and the highest is 3 (100.00%). Pooling the seeds, the largest off-diagonal confusion is requested 5, predicted 3: 3 images, or 0.12% of requests for 5. This is a judgment by the frozen classifier. Failure examples should be inspected to distinguish ambiguous shapes from classifier misrecognition.</p>
+<h2 id="section-8">4. Generation quality, within-class coverage, and a shared feature space</h2>
+<figure>
+<a href="figures/precision_recall.png"><img src="figures/precision_recall.png" alt="precision_recall" loading="lazy" decoding="async"></a>
+</figure>
+<p>Generation precision and coverage recall in the shared feature space. Points represent training seeds; diamonds and error bars indicate means and standard deviations across seeds.</p>
+<figure>
+<a href="figures/per_digit_metrics.png"><img src="figures/per_digit_metrics.png" alt="per_digit_metrics" loading="lazy" decoding="async"></a>
+</figure>
+<p>Heatmaps of per-class MMD², feature precision, and recall. Each column corresponds to a requested digit.</p>
+<p>VAE20 has distribution precision of 71.70%, recall of 54.00%, and MMD² of 3589.6; digit 2 has the lowest recall. Across the three seeds, the standard deviation of condition accuracy is 0.35 percentage points, and that of recall is 1.33 percentage points. These values describe quality, coverage, and training variation for this implementation. No single metric establishes an overall ranking of the models.</p>
+<p>GAN20 has distribution precision of 73.98%, recall of 43.43%, and MMD² of 442.79; digit 8 has the lowest recall. Across the three seeds, the standard deviation of condition accuracy is 0.02 percentage points, and that of recall is 2.36 percentage points. These values describe quality, coverage, and training variation for this implementation. No single metric establishes an overall ranking of the models.</p>
+<p>GAN50 has distribution precision of 80.76%, recall of 51.02%, and MMD² of 300.65; digit 8 has the lowest recall. Across the three seeds, the standard deviation of condition accuracy is 0.01 percentage points, and that of recall is 4.32 percentage points. These values describe quality, coverage, and training variation for this implementation. No single metric establishes an overall ranking of the models.</p>
+<p>As a scale check, evaluating real training images against the same real test references gives MMD² of 30.05, precision of 85.21%, and recall of 87.93%. This real-vs-real baseline is also affected by finite sampling, so MMD² need not be exactly 0 and precision/recall need not be 100%. It helps interpret magnitudes and is not used for training selection. See <a href="data/real_baseline.json" target="_blank" rel="noreferrer">real_baseline.json</a> for the complete record.</p>
+<figure>
+<a href="figures/shared_feature_pca.png"><img src="figures/shared_feature_pca.png" alt="shared_feature_pca" loading="lazy" decoding="async"></a>
+</figure>
+<p>Real and generated distributions in the shared MNIST classifier features, using the same PCA projection. Axes and ranges are identical; overlap in two dimensions is interpreted qualitatively only.</p>
+<p>The first and second principal components explain 20.35% and 17.17% of the variance in real training features, respectively, totaling 37.52%. The two-dimensional plot therefore retains limited information. Overlap cannot be interpreted directly as equality of the underlying distributions.</p>
+<p>PCA is fitted once, only on real training features. All panels share the same center, projection axes, and coordinate ranges. Digit colors indicate true or requested labels. Nearby positions indicate similarity only along these two projection directions, not necessarily in the full feature space. The statistics above are computed in the original 128-dimensional space; the two-dimensional plot does not replace MMD² or coverage metrics.</p>
+<h2 id="section-9">5. Training efficiency, stability, and generation speed</h2>
+<figure>
+<a href="figures/compute_cost.png"><img src="figures/compute_cost.png" alt="compute_cost" loading="lazy" decoding="async"></a>
+</figure>
+<p>Measured training time, generation throughput, and parameter counts used for generation. Throughput uses the median of repeated timings for the model from each training run.</p>
+<figure>
+<a href="figures/training_metrics_epoch.png"><img src="figures/training_metrics_epoch.png" alt="training_metrics_epoch" loading="lazy" decoding="async"></a>
+</figure>
+<p>Generation metrics over training epochs. Thin lines represent training seeds; thick lines and shaded regions show the mean and standard deviation at each epoch.</p>
+<figure>
+<a href="figures/training_metrics_time.png"><img src="figures/training_metrics_time.png" alt="training_metrics_time" loading="lazy" decoding="async"></a>
+</figure>
+<p>Metrics for each training seed against cumulative training time. Curves are not interpolated and averaged along the time axis.</p>
+<figure>
+<a href="figures/native_losses_vae.png"><img src="figures/native_losses_vae.png" alt="native_losses_vae" loading="lazy" decoding="async"></a>
+</figure>
+<p>Variation in the VAE's own training objectives across seeds. These loss values are not used to rank performance between VAE and GAN.</p>
+<figure>
+<a href="figures/native_losses_gan.png"><img src="figures/native_losses_gan.png" alt="native_losses_gan" loading="lazy" decoding="async"></a>
+</figure>
+<p>Variation in the GAN's own training objectives across seeds. These loss values are not used to rank performance between VAE and GAN.</p>
+<figure>
+<a href="figures/training_progress_vae.png"><img src="figures/training_progress_vae.png" alt="training_progress_vae" loading="lazy" decoding="async"></a>
+</figure>
+<p>VAE training progress: three fixed latent vectors are tracked for each of digits 1, 5, and 8, rather than showing only one sample.</p>
+<figure>
+<a href="figures/training_progress_gan.png"><img src="figures/training_progress_gan.png" alt="training_progress_gan" loading="lazy" decoding="async"></a>
+</figure>
+<p>GAN training progress: three fixed latent vectors are tracked for each of digits 1, 5, and 8, rather than showing only one sample.</p>
+<p>The curves are evaluated at predefined epochs. Validation references and generated images use fixed, equal sample counts per class. Shading or error bars show standard deviations across training seeds; individual seed values remain visible to reveal fluctuations. Cumulative training time includes loading data from memory, host-to-GPU transfers, forward and backward passes, and optimizer updates, with GPU synchronization for timing. It excludes initial PNG decoding and cache construction, auxiliary classifier training, intermediate evaluation, checkpoint saving, and plotting. Because all runs use a lossless in-memory cache, these loading times do not represent the performance of the older entry points that read individual PNG files from disk.</p>
+<p>Training-progress grids use multiple digits and latent vectors to track how the same inputs change during training. The VAE's BCE/KL terms and the GAN's adversarial losses are shown separately. Their meanings and scales differ, so their magnitudes cannot be compared directly across methods. A decrease in a GAN loss also does not automatically imply better generation quality. Intermediate curves use the validation set and fewer samples per class; final test precision/recall should therefore not simply be appended to the ends of those curves.</p>
+<div class="table-wrap"><table><thead><tr>
+<th>Complete training task</th>
+<th>Training compute seconds</th>
+<th>Intermediate validation seconds</th>
+<th>Saving and other seconds</th>
+<th>Task wall-clock seconds</th>
+</tr></thead><tbody>
+<tr><td>VAE</td><td>26.12 ± 0.11</td><td>0.11 ± 0.00</td><td>0.14 ± 0.00</td><td>26.37 ± 0.11</td></tr>
+<tr><td>GAN</td><td>152.10 ± 1.36</td><td>0.21 ± 0.01</td><td>0.62 ± 0.02</td><td>152.93 ± 1.39</td></tr>
+</tbody></table></div>
+<p>Auxiliary classifier training and validation took 8.61 seconds of wall-clock time. The sum of wall-clock times for the 6 generative-model training tasks was 537.90 seconds. Each table row summarizes training seeds. Task timing begins after the model and loader have been constructed; it is not the end-to-end duration of the entire experiment. Tasks ran sequentially on the GPU, and GAN20 was not counted as an additional independent task.</p>
+<p>Final evaluation, the scale sweep, and diagnostic data preparation took 8.49 seconds in total. This duration is recorded separately and excluded from training time.</p>
+<div class="table-wrap"><table><thead><tr>
+<th>Checkpoint</th>
+<th>Total training parameters</th>
+<th>Parameters used for generation</th>
+<th>Seconds to generate 10,000 images</th>
+<th>Throughput / images per second</th>
+</tr></thead><tbody>
+<tr><td>VAE20</td><td>289,785</td><td>130,529</td><td>0.02921 ± 0.00050</td><td>3.4239e+05 ± 5.83e+03</td></tr>
+<tr><td>GAN20</td><td>725,782</td><td>578,357</td><td>0.03889 ± 0.00025</td><td>2.5712e+05 ± 1.64e+03</td></tr>
+<tr><td>GAN50</td><td>725,782</td><td>578,357</td><td>0.03882 ± 0.00007</td><td>2.5758e+05 ± 448</td></tr>
+</tbody></table></div>
+<p>The generation benchmark uses batch size 128 and generates 10,000 images per repetition. After warm-up, it repeats 5 times with GPU synchronization for timing. The median duration over the 5 repetitions is computed for each seed, then summarized across seeds. This measures generation compute only for the current hardware and batch size: the forward pass through the decoder/generator with inputs already on the GPU. It excludes random input sampling, transfers, output postprocessing, classifier evaluation, and writing PNG files. VAE training parameters include the encoder and decoder; generation parameters include only decoder_input and decoder. GAN training parameters include G+D, while generation uses only G.</p>
+<p>At the same 20 epochs, the ratio of cumulative GAN to VAE training time is <strong>2.33×</strong>. Efficiency should therefore be evaluated using both changes in generation quality and actual elapsed time, rather than epoch counts alone.</p>
+<h2 id="section-10">6. Latent interpolation and label switching</h2>
+<figure>
+<a href="figures/latent_interpolation.png"><img src="figures/latent_interpolation.png" alt="latent_interpolation" loading="lazy" decoding="async"></a>
+</figure>
+<p>Linear interpolation between random latent endpoints within the same class. Each row fixes the requested digit. The three checkpoints use the same sampling protocol; this does not imply semantic alignment across models.</p>
+<figure>
+<a href="figures/latent_conditional.png"><img src="figures/latent_conditional.png" alt="latent_conditional" loading="lazy" decoding="async"></a>
+</figure>
+<p>Each column keeps the latent vector fixed while changing the condition label from digit 0 to 9, revealing changes in class control and stroke style.</p>
+<p>For each method and requested digit, two predefined random latent vectors are interpolated linearly in 11 steps. Separately, a latent vector is fixed while the condition label is set successively to 0–9. The first experiment examines whether shapes change smoothly as noise changes continuously; the second examines whether the same noise can produce different classes as the label changes. Methods share the input protocol, but the semantics of their latent coordinates are not aligned. The same coordinate need not produce the same stroke changes in both models.</p>
+<p>The latent variance at a linear interpolation midpoint is smaller than at the endpoints: independent standard Gaussian endpoints yield a per-dimension midpoint variance of 1/2. Changes in intermediate shapes therefore also reflect changes in the sampling radius and cannot be attributed entirely to semantic control. The noise-scale sweep in the next section provides related evidence. This comparison uses random prior latent vectors for both models; VAE-specific encoding and reconstruction of real images are not mixed into the shared generation comparison.</p>
+<div class="table-wrap"><table><thead><tr>
+<th>Checkpoint / seed</th>
+<th>Label-switch accuracy with fixed noise</th>
+<th>Condition accuracy at interpolation points</th>
+<th>Mean pixel L1 between adjacent interpolation images</th>
+</tr></thead><tbody>
+<tr><td>VAE20 / 42</td><td>85.00%</td><td>93.64%</td><td>0.01319</td></tr>
+<tr><td>GAN20 / 42</td><td>100.00%</td><td>100.00%</td><td>0.01671</td></tr>
+<tr><td>GAN50 / 42</td><td>100.00%</td><td>100.00%</td><td>0.01621</td></tr>
+</tbody></table></div>
+<p>The label-switch results use 8 fixed noise vectors × 10 labels, totaling 80 images. The interpolation results use 10 digits × 11 positions, totaling 110 images. Both are computed only for the displayed seed. Adjacent-image pixel L1 measures the magnitude of image changes. A small value can indicate smoothness or insufficient variation; it cannot independently establish semantic controllability or diversity.</p>
+<p><strong>Visual observations of fixed samples:</strong> When labels change within a column of fixed latent vectors, some VAE columns preserve stroke thickness and curvature across labels, while also showing shape deviations for requested labels such as 1, 2, and 3. All 80 GAN images in this set are classified as their requested labels. This shows a difference in conditional adherence between these implementations on these inputs, but does not establish that a single training mechanism alone caused that difference.</p>
+<h2 id="section-11">7. Sampling scale: changes in correctness and coverage</h2>
+<figure>
+<a href="figures/noise_scale_metrics.png"><img src="figures/noise_scale_metrics.png" alt="noise_scale_metrics" loading="lazy" decoding="async"></a>
+</figure>
+<p>Quality, coverage, and condition accuracy as the Gaussian noise scale changes. τ=1 is the training prior; error bars reflect training seeds.</p>
+<figure>
+<a href="figures/noise_scale_samples.png"><img src="figures/noise_scale_samples.png" alt="noise_scale_samples" loading="lazy" decoding="async"></a>
+</figure>
+<p>Sample grids that keep the latent direction fixed for each digit and vary only its scale. Each strip contains digits 0–9.</p>
+<p>For the same batch of base noise ε, use z=τε with τ∈{0.5,1,1.5,2}. Each scale uses the same requested labels, final references, and sample counts. τ=1 is the standard prior in the main experiment. This sweep is a predefined diagnostic; test results are not used to select a new optimal configuration for the formal comparison.</p>
+<p><strong>VAE20</strong>: at τ=0.5, condition accuracy is 99.81%, precision is 93.85%, and recall is 4.93%; at τ=2, these are 47.28%, 29.93%, and 86.83%, respectively.</p>
+<p>For VAE20, increasing τ from 0.5 to 2 changes condition accuracy by -52.53 percentage points, precision by -63.92 percentage points, recall by +81.90 percentage points, and MMD² by +4472. Whether a larger latent magnitude improves coverage must be considered together with incorrect classes and distribution mismatch, rather than judged solely by the extent of image variation.</p>
+<p><strong>GAN20</strong>: at τ=0.5, condition accuracy is 100.00%, precision is 93.08%, and recall is 12.19%; at τ=2, these are 96.40%, 46.44%, and 68.75%, respectively.</p>
+<p>For GAN20, increasing τ from 0.5 to 2 changes condition accuracy by -3.60 percentage points, precision by -46.65 percentage points, recall by +56.55 percentage points, and MMD² by -1135.6. Whether a larger latent magnitude improves coverage must be considered together with incorrect classes and distribution mismatch, rather than judged solely by the extent of image variation.</p>
+<p><strong>GAN50</strong>: at τ=0.5, condition accuracy is 100.00%, precision is 96.13%, and recall is 11.90%; at τ=2, these are 96.37%, 49.38%, and 75.46%, respectively.</p>
+<p>For GAN50, increasing τ from 0.5 to 2 changes condition accuracy by -3.63 percentage points, precision by -46.75 percentage points, recall by +63.56 percentage points, and MMD² by -1709.6. Whether a larger latent magnitude improves coverage must be considered together with incorrect classes and distribution mismatch, rather than judged solely by the extent of image variation.</p>
+<p>At small scales, recall can be very low even when condition accuracy is nearly perfect: generating the requested digit correctly does not imply coverage of its many handwriting styles. At the other extreme, if a large scale reduces accuracy and precision while increasing recall, that increase cannot automatically be described as more valid styles. Outliers and their larger nearest-neighbor balls can expand the estimated support. This is why correctness, quality, and coverage must be examined together. The main comparison always retains τ=1.</p>
+<div class="table-wrap"><table><thead><tr>
+<th>Checkpoint</th>
+<th>τ</th>
+<th>Condition accuracy</th>
+<th>MMD²</th>
+<th>precision</th>
+<th>recall</th>
+</tr></thead><tbody>
+<tr><td>VAE20</td><td>0.5</td><td>99.81 ± 0.03%</td><td>2089.6 ± 145</td><td>93.85 ± 0.13%</td><td>4.93 ± 0.41%</td></tr>
+<tr><td>VAE20</td><td>1.0</td><td>89.32 ± 0.35%</td><td>3589.6 ± 62</td><td>71.70 ± 0.40%</td><td>54.00 ± 1.33%</td></tr>
+<tr><td>VAE20</td><td>1.5</td><td>65.28 ± 0.36%</td><td>5315.4 ± 110</td><td>45.31 ± 0.29%</td><td>79.95 ± 0.86%</td></tr>
+<tr><td>VAE20</td><td>2.0</td><td>47.28 ± 0.46%</td><td>6561.6 ± 159</td><td>29.93 ± 0.50%</td><td>86.83 ± 0.48%</td></tr>
+<tr><td>GAN20</td><td>0.5</td><td>100.00 ± 0.00%</td><td>2097.8 ± 353</td><td>93.08 ± 1.45%</td><td>12.19 ± 1.25%</td></tr>
+<tr><td>GAN20</td><td>1.0</td><td>99.92 ± 0.02%</td><td>442.79 ± 113</td><td>73.98 ± 1.02%</td><td>43.43 ± 2.36%</td></tr>
+<tr><td>GAN20</td><td>1.5</td><td>99.27 ± 0.08%</td><td>413.25 ± 37</td><td>57.96 ± 0.29%</td><td>60.63 ± 2.61%</td></tr>
+<tr><td>GAN20</td><td>2.0</td><td>96.40 ± 0.46%</td><td>962.19 ± 31.6</td><td>46.44 ± 0.06%</td><td>68.75 ± 2.48%</td></tr>
+<tr><td>GAN50</td><td>0.5</td><td>100.00 ± 0.00%</td><td>2750 ± 631</td><td>96.13 ± 0.79%</td><td>11.90 ± 0.90%</td></tr>
+<tr><td>GAN50</td><td>1.0</td><td>99.94 ± 0.01%</td><td>300.65 ± 96.8</td><td>80.76 ± 1.14%</td><td>51.02 ± 4.32%</td></tr>
+<tr><td>GAN50</td><td>1.5</td><td>99.45 ± 0.06%</td><td>318.53 ± 44</td><td>63.19 ± 2.04%</td><td>68.98 ± 3.17%</td></tr>
+<tr><td>GAN50</td><td>2.0</td><td>96.37 ± 0.43%</td><td>1040.3 ± 125</td><td>49.38 ± 1.95%</td><td>75.46 ± 3.42%</td></tr>
+</tbody></table></div>
+<p><strong>Visual observations of fixed samples:</strong> In the fixed-direction scale grids, VAE strokes become weaker and more fragmented at τ=1.5 and 2, while most GAN examples retain recognizable digit outlines over the same range. This observation is consistent with the marked decrease in VAE condition accuracy and precision at large scales. Greater variation in individual images does not automatically imply greater valid diversity.</p>
+<h2 id="section-12">8. Nearest neighbors and failure cases</h2>
+<figure>
+<a href="figures/nearest_neighbor_pairs.png"><img src="figures/nearest_neighbor_pairs.png" alt="nearest_neighbor_pairs" loading="lazy" decoding="async"></a>
+</figure>
+<p>Generated samples and their nearest neighbors in the same-class training features. Similarity supports inspection but cannot independently prove memorization of training images.</p>
+<figure>
+<a href="figures/nearest_neighbor_distances.png"><img src="figures/nearest_neighbor_distances.png" alt="nearest_neighbor_distances" loading="lazy" decoding="async"></a>
+</figure>
+<p>Empirical cumulative distributions of distances from generated images to their nearest neighbors in same-class training features. Distance magnitude is not an independent measure of generation quality or memorization.</p>
+<figure>
+<a href="figures/condition_failures_VAE20.png"><img src="figures/condition_failures_VAE20.png" alt="condition_failures_VAE20" loading="lazy" decoding="async"></a>
+</figure>
+<p>VAE · epoch 20 examples where the classifier disagrees with the requested condition. Images must be inspected; classifier predictions are not human ground truth.</p>
+<figure>
+<a href="figures/condition_failures_GAN20.png"><img src="figures/condition_failures_GAN20.png" alt="condition_failures_GAN20" loading="lazy" decoding="async"></a>
+</figure>
+<p>GAN · epoch 20 examples where the classifier disagrees with the requested condition. Images must be inspected; classifier predictions are not human ground truth.</p>
+<figure>
+<a href="figures/condition_failures_GAN50.png"><img src="figures/condition_failures_GAN50.png" alt="condition_failures_GAN50" loading="lazy" decoding="async"></a>
+</figure>
+<p>GAN · epoch 50 examples where the classifier disagrees with the requested condition. Images must be inspected; classifier predictions are not human ground truth.</p>
+<p>Nearest-neighbor searches are restricted to training images of the same class and use distances in the same frozen classifier's high-dimensional feature space. The figures show a fixed selection of generated images and their matched training images. Similar strokes can reflect the natural similarity of MNIST images within a class or limited coverage; nearest-neighbor similarity alone does not establish memorization. Failure cases are selected in a predefined order from images whose predicted class differs from the requested condition, with both digits shown. These are diagnostic examples; a few cases cannot replace the overall error rate.</p>
+<p>For VAE20, among the 8,000 final generated images for display seed 42, 847 are not classified as their requested class (10.59%). The failure gallery represents only examples identified by this fixed detection rule.</p>
+<p>For GAN20, among the 8,000 final generated images for display seed 42, 5 are not classified as their requested class (0.06%). The failure gallery represents only examples identified by this fixed detection rule.</p>
+<p>For GAN50, among the 8,000 final generated images for display seed 42, 6 are not classified as their requested class (0.07%). The failure gallery represents only examples identified by this fixed detection rule.</p>
+<div class="table-wrap"><table><thead><tr>
+<th>Checkpoint</th>
+<th>Mean distance to same-class training nearest neighbor</th>
+<th>Median distance</th>
+<th>Number of displayed failures</th>
+</tr></thead><tbody>
+<tr><td>VAE20</td><td>13.3019</td><td>13.1047</td><td>20</td></tr>
+<tr><td>GAN20</td><td>11.0150</td><td>11.0108</td><td>5</td></tr>
+<tr><td>GAN50</td><td>10.4444</td><td>10.4756</td><td>6</td></tr>
+</tbody></table></div>
+<p>Nearest-neighbor distance statistics use all final generated images for the displayed seed; the main pairing figure shows only the first sample for each requested digit. Failure figures select the earliest 20 condition errors by overall generation index, so they can concentrate on the first few digits. This results from the fixed ordering and does not imply that digits absent from the gallery have no errors. Further raw diagnostic quantities are available in <a href="data/visual_diagnostics.json" target="_blank" rel="noreferrer">visual_diagnostics.json</a>.</p>
+<p><strong>Visual observations of fixed samples:</strong> Among GAN20's 5 classifier-disagreement cases, the last image, "requested 9, predicted 7," still has a clear loop characteristic of 9, and the first image, "requested 7, predicted 9," has a recognizable 7 shape. Classifier disagreement therefore cannot always be treated as a generation error confirmed by a human. Nearest-neighbor pairs have similar outlines, but several differ in stroke thickness and connection details. A small set of pairs can establish neither memorization nor its complete absence.</p>
+<h2 id="section-13">9. Limitations and reproduction</h2>
+<p>This experiment compares the repository's two specific conditional models with their fixed optimizer settings. Architecture parameter counts are not controlled, and the two methods have not received equal hyperparameter tuning. The VAE uses one-hot conditions, while the GAN uses learnable embeddings. Their methods of injecting conditions and their generation-network capacities also differ, so observed differences cannot all be attributed to the VAE/GAN objectives themselves. The results therefore do not establish universal conclusions about all VAEs and GANs. There are only three training seeds. Fixed sampling noise and reference sets reduce comparison noise, but the error bars do not cover all uncertainty from new reference data, classifier retraining, or new sampling seeds. MMD² and precision/recall rely on the same classifier features and are not fully independent evidence. Findings on MNIST also do not directly represent color natural images.</p>
+<h3 id="section-14">Recorded runtime environment</h3>
+<div class="table-wrap"><table><thead><tr>
+<th>Item</th>
+<th>Recorded value</th>
+</tr></thead><tbody>
+<tr><td>GPU</td><td>NVIDIA GeForce RTX 5080</td></tr>
+<tr><td>PyTorch / torchvision</td><td>2.14.0+cu130 / 0.29.0+cu130</td></tr>
+<tr><td>Python</td><td>3.13.15</td></tr>
+<tr><td>CUDA / cuDNN</td><td>13.0 / 92400</td></tr>
+<tr><td>NumPy</td><td>2.5.3</td></tr>
+<tr><td>System</td><td>Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39</td></tr>
+<tr><td>TF32 / CPU threads</td><td>False / 4</td></tr>
+<tr><td>Git commit at experiment start</td><td>c89b2e3cbfa5ccd05abd2e762995edb1d5ffddfe</td></tr>
+</tbody></table></div>
+<p>Seeds control model initialization, training randomness, and separate DataLoader random streams. Evaluation uses independent samplers and saves/restores the Python, NumPy, and PyTorch CPU/CUDA random states. Generation switches to eval mode and restores the previous state afterward. Every complete epoch saves resumable model, optimizer, and random states; completed tasks are reused only with matching configurations. cuDNN uses deterministic mode, with benchmark and TF32 disabled. This does not guarantee bitwise agreement across hardware or framework versions.</p>
+<p>From the repository root, run the following in the existing <code>vae</code> environment:</p>
+<pre><code class="language-bash">python tools/compare.py --config configs/comparison.toml --stage all
+# Repeat final evaluation and plotting after training
+python tools/compare.py --config configs/comparison.toml --stage evaluate
+python tools/compare.py --config configs/comparison.toml --stage report
+# Small real-data check in a separate directory
+python tools/compare.py --config configs/comparison.toml --stage all --smoke</code></pre>
+<p>To train an independent experiment, copy the configuration and set new directories for <code>run_dir</code> and <code>report_dir</code>; do not overwrite the existing formal results. The original cache assumes a fixed data source. If that source changes, manage the cache separately. Full training weights and resumable states remain in the experiment run directory and are not copied into the report directory.</p>
+<h3 id="section-15">Validation and artifact integrity</h3>
+<p>Before generating the formal report, the following were verified: training and validation indices are disjoint and cover the original 60,000 training images; every model/seed has a complete epoch history; all required checkpoints have intermediate evaluations; each of the three formal checkpoint groups contains three seeds; all results for the four scales are present; and the actual SHA-256 hashes of the weights and frozen classifier match those used for final evaluation. Summary CSV files and the report text are computed from the same per-seed JSON results. All local image and data links are checked after report generation.</p>
+<p>Independent cpu checks passed: distribution_formulas_and_pr_direction, macro_and_confusion, rng_restoration, evaluator_features, generation_isolation, existing_checkpoint_compatibility_cpu. See <a href="data/comparison-checks-cpu.json" target="_blank" rel="noreferrer">comparison-checks-cpu.json</a> for detailed assertions and execution times.</p>
+<p>Independent cuda checks passed: distribution_formulas_and_pr_direction, macro_and_confusion, rng_restoration, evaluator_features, generation_isolation, existing_checkpoint_compatibility_cpu. See <a href="data/comparison-checks-cuda.json" target="_blank" rel="noreferrer">comparison-checks-cuda.json</a> for detailed assertions and execution times.</p>
+<h3 id="section-16">Raw records and integrity</h3>
+<p><a href="data/summary.csv" target="_blank" rel="noreferrer">Summary table</a> · <a href="data/per_seed.csv" target="_blank" rel="noreferrer">Per-seed table</a> · <a href="data/per_class.csv" target="_blank" rel="noreferrer">Per-class table</a> · <a href="data/scale_per_seed.csv" target="_blank" rel="noreferrer">Scale sweep</a> · <a href="data/final_metrics.json" target="_blank" rel="noreferrer">Complete final metrics</a> · <a href="data/config.json" target="_blank" rel="noreferrer">Configuration</a> · <a href="data/training_histories.json" target="_blank" rel="noreferrer">Training histories</a> · <a href="data/split.json" target="_blank" rel="noreferrer">Full split indices</a> · <a href="data/test-reference-indices.json" target="_blank" rel="noreferrer">Final reference indices</a> · <a href="data/environment.json" target="_blank" rel="noreferrer">Environment</a> · <a href="data/manifest.json" target="_blank" rel="noreferrer">File hashes</a>. The starting Git commit and per-file SHA-256 hashes jointly record the uncommitted source state. Each final result also records the actual checkpoint hash.</p>
+<p>Source hashes from the start of training are retained in the original environment.json. After training, the only changes to comparison_study.py removed an unused import and allowed the report stage to run without CUDA; training logic was unchanged. The training version was reconstructed by reversing the changes, and its hash was verified. The <a href="data/training_comparison_study.py" target="_blank" rel="noreferrer">training-time source</a>, <a href="data/training-to-final.patch" target="_blank" rel="noreferrer">patch from training to final version</a>, and <a href="data/code-provenance.json" target="_blank" rel="noreferrer">source provenance notes</a> are saved. The final report manifest separately records current source hashes.</p>
+<p>Visual observations of a small set of fixed samples are saved separately in <a href="data/visual_observations.json" target="_blank" rel="noreferrer">visual_observations.json</a>, bound to the SHA-256 hash of the final metrics file. They are human-readable interpretations of images, not additional blind-test scores.</p>
+<p>All figures are provided as high-resolution PNG files. Statistical curves, scatterplots, and heatmaps also have SVG versions with matching names in the same figures directory for enlargement and layout.</p>
+<h2 id="section-17">Appendix: other training seeds and supplementary figures</h2>
+<figure>
+<a href="figures/seed_samples_VAE20.png"><img src="figures/seed_samples_VAE20.png" alt="seed_samples_VAE20" loading="lazy" decoding="async"></a>
+</figure>
+<p>Per-class samples from independent training seeds for VAE · epoch 20, supplementing the main sample grids.</p>
+<figure>
+<a href="figures/seed_samples_GAN20.png"><img src="figures/seed_samples_GAN20.png" alt="seed_samples_GAN20" loading="lazy" decoding="async"></a>
+</figure>
+<p>Per-class samples from independent training seeds for GAN · epoch 20, supplementing the main sample grids.</p>
+<figure>
+<a href="figures/seed_samples_GAN50.png"><img src="figures/seed_samples_GAN50.png" alt="seed_samples_GAN50" loading="lazy" decoding="async"></a>
+</figure>
+<p>Per-class samples from independent training seeds for GAN · epoch 50, supplementing the main sample grids.</p></article>
+      <footer>
+        <span class="footer-label">Three-seed Comparison Study</span>
+        <span>·</span>
+        <span class="footer-project">VAEvsGAN Experimental Project</span>
+      </footer>
+    </main>
+  </div>
+  <template id="toc-zh"><a class="toc-section" href="#section-1">1. 主要结果：分别回答两种预算下的比较</a>
 <a class="toc-sub" href="#section-2">相同数据遍数：VAE20 与 GAN20</a>
 <a class="toc-sub" href="#section-3">默认训练设置：VAE20 与 GAN50</a>
 <a class="toc-sub" href="#section-4">同一个 GAN 从 20 到 50 epoch</a>
@@ -48,10 +377,8 @@
 <a class="toc-sub" href="#section-14">实际运行环境</a>
 <a class="toc-sub" href="#section-15">验证与产物完整性</a>
 <a class="toc-sub" href="#section-16">原始记录与完整性</a>
-<a class="toc-section" href="#section-17">附录：其他训练种子与补充图</a></nav>
-    </aside>
-    <main>
-      <article class="report-content"><h1 id="report-title">MNIST 条件 VAE 与 GAN：质量、覆盖、控制与效率对比</h1>
+<a class="toc-section" href="#section-17">附录：其他训练种子与补充图</a></template>
+  <template id="article-zh"><h1 id="report-title">MNIST 条件 VAE 与 GAN：质量、覆盖、控制与效率对比</h1>
 <p>实验启动：2026-10-10 17:53（Asia/Shanghai）。本报告由保存的实际权重与评估结果生成；数据为 MNIST，生成模型是本仓库既有条件卷积 VAE 和条件 DCGAN。正式实验共 6 次训练，随机种子为 42, 43, 44。</p>
 <h2 id="section-1">1. 主要结果：分别回答两种预算下的比较</h2>
 <p>下表为独立训练种子的均值 ± <strong>样本标准差</strong>（ddof=1），百分数后的标准差同样以百分点表示。条件准确率、precision、recall 越高越好，MMD² 越低越好；训练时间以秒计。误差条描述训练种子的差异，不是置信区间。</p>
@@ -347,12 +674,8 @@ python tools/compare.py --config configs/comparison.toml --stage all --smoke</co
 <figure>
 <a href="figures/seed_samples_GAN50.png"><img src="figures/seed_samples_GAN50.png" alt="seed_samples_GAN50" loading="lazy" decoding="async"></a>
 </figure>
-<p>GAN · epoch 50 在独立训练种子上的逐类样本，作为主样本网格的附录。</p></article>
-      <footer>
-        <span>VAEvsGAN · 三种子对比实验</span>
-        <a href="#report-title">返回顶部</a>
-      </footer>
-    </main>
-  </div>
+<p>GAN · epoch 50 在独立训练种子上的逐类样本，作为主样本网格的附录。</p></template>
+  <button class="back-to-top" type="button" aria-label="Back to top">↑</button>
+  <script src="../assets/site.js"></script>
 </body>
 </html>

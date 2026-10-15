@@ -186,7 +186,7 @@ button:focus-visible { border-radius: 2px; outline: 2px solid var(--accent); out
 .toc-section { padding: 7px 10px; }
 .toc-sub { padding: 5px 10px 5px 22px; }
 
-article { min-width: 0; }
+article { min-width: 0; overflow-wrap: anywhere; }
 article h1,
 article h2,
 article h3 { color: var(--text-strong); text-wrap: balance; }

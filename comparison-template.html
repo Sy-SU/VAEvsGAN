@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="MNIST 条件 VAE 与 GAN 的三种子实验：生成质量、覆盖、条件控制与效率的完整对比报告。">
+  <meta name="description" content="A three-seed comparison of conditional VAE and GAN on MNIST: generation quality, coverage, conditional control, and efficiency.">
   <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0d151f" media="(prefers-color-scheme: dark)">
-  <title>MNIST 条件 VAE 与 GAN：对比实验</title>
+  <title>Conditional VAE vs GAN on MNIST: Comparison Study</title>
   <link rel="stylesheet" href="../assets/homepage.css">
   <script>
     window.MathJax = {
@@ -16,31 +16,42 @@
   </script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
-<body>
+<body data-report="comparison">
+  <div class="reading-progress" aria-hidden="true"><span></span></div>
   <header class="site-header">
-    <a class="brand" href="#report-title" aria-label="返回报告顶部">
+    <a class="brand" href="#report-title" aria-label="Back to the report title">
       <span class="brand-mark">V/G</span>
       <span>VAE vs GAN</span>
     </a>
-    <nav class="header-links" aria-label="页面链接">
-      <a href="../">读书报告</a>
-      <a class="markdown-link" href="comparison.md">Markdown</a>
+    <nav class="header-links" aria-label="Page links">
+      <div class="language-switch" role="group" aria-label="Language">
+        <button type="button" data-language="en" aria-pressed="true">EN</button>
+        <span aria-hidden="true">/</span>
+        <button type="button" data-language="zh" aria-pressed="false">中文</button>
+      </div>
+      <a class="reading-link" href="../?lang=en">Reading Report</a>
+      <a class="markdown-link" href="comparison.en.md">Markdown</a>
       <a class="github-link" href="https://github.com/Sy-SU/VAEvsGAN" target="_blank" rel="noreferrer">GitHub</a>
       <a class="home-link" href="https://sy-su.github.io/">Home</a>
     </nav>
   </header>
   <div class="page-shell">
-    <aside class="toc" aria-label="实验报告目录">
-      <p class="toc-label">目录</p>
-      <nav class="toc-content">{{TOC}}</nav>
+    <aside class="toc" aria-label="Comparison study contents">
+      <p class="toc-label">Contents</p>
+      <nav class="toc-content">{{TOC_EN}}</nav>
     </aside>
     <main>
-      <article class="report-content">{{ARTICLE}}</article>
+      <article class="report-content">{{ARTICLE_EN}}</article>
       <footer>
-        <span>VAEvsGAN · 三种子对比实验</span>
-        <a href="#report-title">返回顶部</a>
+        <span class="footer-label">Three-seed Comparison Study</span>
+        <span>·</span>
+        <span class="footer-project">VAEvsGAN Experimental Project</span>
       </footer>
     </main>
   </div>
+  <template id="toc-zh">{{TOC_ZH}}</template>
+  <template id="article-zh">{{ARTICLE_ZH}}</template>
+  <button class="back-to-top" type="button" aria-label="Back to top">↑</button>
+  <script src="../assets/site.js"></script>
 </body>
 </html>
