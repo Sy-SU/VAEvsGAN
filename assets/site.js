@@ -5,6 +5,7 @@ const toc = document.querySelector('.toc-content');
 const tocContainer = document.querySelector('.toc');
 const tocLabel = document.querySelector('.toc-label');
 const markdownLink = document.querySelector('.markdown-link');
+const comparisonLink = document.querySelector('.comparison-link');
 const footerLabel = document.querySelector('.footer-label');
 const footerProject = document.querySelector('.footer-project');
 const brand = document.querySelector('.brand');
@@ -21,6 +22,7 @@ const content = {
     contents: 'Contents',
     tocLabel: 'Report contents',
     markdown: 'report.en.md',
+    comparison: 'Experiments (中文)',
     footer: 'Pattern Recognition Reading Report',
     project: 'VAEvsGAN Experimental Project',
     back: 'Back to top',
@@ -36,6 +38,7 @@ const content = {
     contents: '目录',
     tocLabel: '报告目录',
     markdown: 'report.zh.md',
+    comparison: '对比实验',
     footer: '模式识别技术读书报告',
     project: 'VAEvsGAN 实验项目',
     back: '返回顶部',
@@ -86,6 +89,7 @@ function setLanguage(language) {
   tocLabel.textContent = selected.contents;
   tocContainer.setAttribute('aria-label', selected.tocLabel);
   markdownLink.href = selected.markdown;
+  comparisonLink.textContent = selected.comparison;
   footerLabel.textContent = selected.footer;
   footerProject.textContent = selected.project;
   backToTop.setAttribute('aria-label', selected.back);

@@ -355,18 +355,39 @@ def render_markdown(markdown: str) -> tuple[str, str]:
             output.append(f'<a id="{pending_anchor}"></a>')
             pending_anchor = ""
 
+        if line.startswith("```"):
+            language = line[3:].strip()
+            code_lines: list[str] = []
+            index += 1
+            while index < len(lines) and not lines[index].startswith("```"):
+                code_lines.append(lines[index])
+                index += 1
+            if index == len(lines):
+                raise ValueError("Unclosed Markdown code fence")
+            index += 1
+            css_class = f' class="language-{html.escape(language, quote=True)}"' if language else ""
+            code = html.escape("\n".join(code_lines))
+            output.append(f"<pre><code{css_class}>{code}</code></pre>")
+            continue
+
         if line.startswith("> "):
             output.append(f"<p class=\"eyebrow\">{render_inline(line[2:])}</p>")
             index += 1
             continue
 
         if line.startswith("$$"):
-            math_lines: list[str] = []
-            index += 1
-            while index < len(lines) and not lines[index].startswith("$$"):
-                math_lines.append(lines[index])
+            if len(line) > 4 and line.endswith("$$"):
+                math_lines = [line[2:-2]]
                 index += 1
-            index += 1
+            else:
+                math_lines = [line[2:]] if line[2:] else []
+                index += 1
+                while index < len(lines) and not lines[index].startswith("$$"):
+                    math_lines.append(lines[index])
+                    index += 1
+                if index == len(lines):
+                    raise ValueError("Unclosed Markdown display math")
+                index += 1
             output.append('<div class="math-display">\\[' + "\n".join(math_lines) + "\\]</div>")
             continue
 
@@ -432,7 +453,7 @@ def render_markdown(markdown: str) -> tuple[str, str]:
             candidate = lines[index].rstrip()
             if (
                 re.match(r"^(#{1,3})\s+", candidate)
-                or candidate.startswith(("$$", "<figure", "|", "> ", "- "))
+                or candidate.startswith(("$$", "```", "<figure", "|", "> ", "- "))
                 or re.match(r"^\d+\.\s+", candidate)
                 or re.fullmatch(r'<a id="([^"]+)"></a>', candidate.strip())
             ):

@@ -104,7 +104,7 @@ button:focus-visible { border-radius: 2px; outline: 2px solid var(--accent); out
   font-weight: 700;
   letter-spacing: 0.02em;
 }
-.header-links { display: flex; align-items: center; gap: 32px; font-size: 14px; }
+.header-links { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px 24px; font-size: 14px; }
 .header-links a {
   position: relative;
   padding-block: 12px;
@@ -235,6 +235,14 @@ article code {
   font-size: 0.88em;
 }
 .citation { margin-left: 0.08em; }
+article pre {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 18px 20px;
+  background: var(--tint);
+  line-height: 1.6;
+}
+article pre code { padding: 0; background: transparent; }
 .citation a { color: var(--accent); text-decoration: none; }
 
 .math-display {

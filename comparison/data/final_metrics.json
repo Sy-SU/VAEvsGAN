@@ -1,0 +1,2036 @@
+[
+  {
+    "macro": {
+      "accuracy": 0.8941250000000001,
+      "mmd2": 3518.99647744998,
+      "precision": 0.721375,
+      "recall": 0.53025
+    },
+    "per_class": [
+      {
+        "digit": 0,
+        "accuracy": 0.91625,
+        "mmd2": 2327.62005237401,
+        "precision": 0.72375,
+        "recall": 0.55625
+      },
+      {
+        "digit": 1,
+        "accuracy": 0.925,
+        "mmd2": 126.98114593461355,
+        "precision": 0.59125,
+        "recall": 0.72
+      },
+      {
+        "digit": 2,
+        "accuracy": 0.86625,
+        "mmd2": 5320.917608759159,
+        "precision": 0.825,
+        "recall": 0.39625
+      },
+      {
+        "digit": 3,
+        "accuracy": 0.96625,
+        "mmd2": 5098.849700633593,
+        "precision": 0.76625,
+        "recall": 0.5825
+      },
+      {
+        "digit": 4,
+        "accuracy": 0.95625,
+        "mmd2": 2679.9588743989916,
+        "precision": 0.75375,
+        "recall": 0.49625
+      },
+      {
+        "digit": 5,
+        "accuracy": 0.86375,
+        "mmd2": 9161.656639050023,
+        "precision": 0.855,
+        "recall": 0.48625
+      },
+      {
+        "digit": 6,
+        "accuracy": 0.90375,
+        "mmd2": 2501.877224594111,
+        "precision": 0.66125,
+        "recall": 0.50625
+      },
+      {
+        "digit": 7,
+        "accuracy": 0.91125,
+        "mmd2": 1791.6011106144915,
+        "precision": 0.625,
+        "recall": 0.57375
+      },
+      {
+        "digit": 8,
+        "accuracy": 0.8175,
+        "mmd2": 2695.4380690737835,
+        "precision": 0.74125,
+        "recall": 0.41875
+      },
+      {
+        "digit": 9,
+        "accuracy": 0.815,
+        "mmd2": 3485.0643490670263,
+        "precision": 0.67125,
+        "recall": 0.56625
+      }
+    ],
+    "confusion": [
+      [
+        733,
+        0,
+        9,
+        11,
+        0,
+        8,
+        15,
+        6,
+        7,
+        11
+      ],
+      [
+        0,
+        740,
+        22,
+        12,
+        0,
+        1,
+        4,
+        19,
+        1,
+        1
+      ],
+      [
+        5,
+        9,
+        693,
+        50,
+        2,
+        3,
+        6,
+        11,
+        17,
+        4
+      ],
+      [
+        4,
+        0,
+        2,
+        773,
+        0,
+        14,
+        0,
+        1,
+        1,
+        5
+      ],
+      [
+        3,
+        3,
+        0,
+        3,
+        765,
+        0,
+        2,
+        5,
+        3,
+        16
+      ],
+      [
+        6,
+        0,
+        0,
+        62,
+        2,
+        691,
+        12,
+        3,
+        10,
+        14
+      ],
+      [
+        17,
+        2,
+        8,
+        4,
+        7,
+        10,
+        723,
+        0,
+        20,
+        9
+      ],
+      [
+        6,
+        3,
+        22,
+        22,
+        2,
+        0,
+        1,
+        729,
+        0,
+        15
+      ],
+      [
+        7,
+        3,
+        32,
+        72,
+        0,
+        14,
+        3,
+        1,
+        654,
+        14
+      ],
+      [
+        18,
+        0,
+        1,
+        28,
+        17,
+        3,
+        3,
+        52,
+        26,
+        652
+      ]
+    ],
+    "variant": "VAE20",
+    "model": "vae",
+    "epoch": 20,
+    "seed": 42,
+    "train_seconds": 26.154928002001043,
+    "parameters_total": 289785,
+    "parameters_generate": 130529,
+    "checkpoint_sha256": "136704f2eb6a11a5e208e587010d99d92ddc9b550c7f463db06c81bbdaba100a",
+    "generation_benchmark": {
+      "seconds_median": 0.02924510500042743,
+      "images_per_second": 341937.56527302077,
+      "repeats_seconds": [
+        0.030877874999987398,
+        0.029925482000180637,
+        0.029068954000194935,
+        0.028754323999692133,
+        0.02924510500042743
+      ],
+      "images": 10000,
+      "batch_size": 128,
+      "scope": "forward only; latent and labels already on GPU; excludes transfer, RNG, postprocessing, evaluator and PNG writing"
+    },
+    "samples_per_class": 800,
+    "reference_split": "test"
+  },
+  {
+    "macro": {
+      "accuracy": 0.896125,
+      "mmd2": 3614.858106608389,
+      "precision": 0.71375,
+      "recall": 0.534625
+    },
+    "per_class": [
+      {
+        "digit": 0,
+        "accuracy": 0.9225,
+        "mmd2": 2511.6472846812394,
+        "precision": 0.7225,
+        "recall": 0.6075
+      },
+      {
+        "digit": 1,
+        "accuracy": 0.93125,
+        "mmd2": 125.02168502385462,
+        "precision": 0.5925,
+        "recall": 0.72375
+      },
+      {
+        "digit": 2,
+        "accuracy": 0.8875,
+        "mmd2": 5418.179848672946,
+        "precision": 0.82875,
+        "recall": 0.37
+      },
+      {
+        "digit": 3,
+        "accuracy": 0.9475,
+        "mmd2": 5851.9252885890455,
+        "precision": 0.76375,
+        "recall": 0.54625
+      },
+      {
+        "digit": 4,
+        "accuracy": 0.9425,
+        "mmd2": 2647.405797942336,
+        "precision": 0.715,
+        "recall": 0.5275
+      },
+      {
+        "digit": 5,
+        "accuracy": 0.86625,
+        "mmd2": 9288.980575433237,
+        "precision": 0.85125,
+        "recall": 0.4375
+      },
+      {
+        "digit": 6,
+        "accuracy": 0.90125,
+        "mmd2": 2578.9310858113486,
+        "precision": 0.65375,
+        "recall": 0.53375
+      },
+      {
+        "digit": 7,
+        "accuracy": 0.905,
+        "mmd2": 1413.5650589788956,
+        "precision": 0.635,
+        "recall": 0.57125
+      },
+      {
+        "digit": 8,
+        "accuracy": 0.80625,
+        "mmd2": 2803.5219161536006,
+        "precision": 0.71,
+        "recall": 0.4375
+      },
+      {
+        "digit": 9,
+        "accuracy": 0.85125,
+        "mmd2": 3509.4025247973877,
+        "precision": 0.665,
+        "recall": 0.59125
+      }
+    ],
+    "confusion": [
+      [
+        738,
+        1,
+        12,
+        16,
+        1,
+        7,
+        8,
+        6,
+        3,
+        8
+      ],
+      [
+        0,
+        745,
+        26,
+        9,
+        4,
+        0,
+        1,
+        9,
+        6,
+        0
+      ],
+      [
+        10,
+        3,
+        710,
+        49,
+        0,
+        2,
+        2,
+        12,
+        4,
+        8
+      ],
+      [
+        2,
+        1,
+        12,
+        758,
+        0,
+        17,
+        2,
+        3,
+        1,
+        4
+      ],
+      [
+        4,
+        2,
+        4,
+        0,
+        754,
+        1,
+        7,
+        5,
+        1,
+        22
+      ],
+      [
+        6,
+        0,
+        5,
+        59,
+        2,
+        693,
+        19,
+        3,
+        5,
+        8
+      ],
+      [
+        20,
+        2,
+        10,
+        2,
+        4,
+        28,
+        721,
+        0,
+        12,
+        1
+      ],
+      [
+        5,
+        1,
+        8,
+        38,
+        2,
+        0,
+        1,
+        724,
+        2,
+        19
+      ],
+      [
+        7,
+        4,
+        23,
+        73,
+        0,
+        12,
+        7,
+        2,
+        645,
+        27
+      ],
+      [
+        2,
+        0,
+        1,
+        19,
+        11,
+        9,
+        2,
+        56,
+        19,
+        681
+      ]
+    ],
+    "variant": "VAE20",
+    "model": "vae",
+    "epoch": 20,
+    "seed": 43,
+    "train_seconds": 26.203906741000083,
+    "parameters_total": 289785,
+    "parameters_generate": 130529,
+    "checkpoint_sha256": "212d4332b214cab12b2f8e7aceac62ce27189666ab25e5ed993730e39781f6f8",
+    "generation_benchmark": {
+      "seconds_median": 0.02869945700012977,
+      "images_per_second": 348438.6481582137,
+      "repeats_seconds": [
+        0.028438520000236167,
+        0.028578372999618296,
+        0.02869945700012977,
+        0.03486991400041006,
+        0.031943209000019124
+      ],
+      "images": 10000,
+      "batch_size": 128,
+      "scope": "forward only; latent and labels already on GPU; excludes transfer, RNG, postprocessing, evaluator and PNG writing"
+    },
+    "samples_per_class": 800,
+    "reference_split": "test"
+  },
+  {
+    "macro": {
+      "accuracy": 0.889375,
+      "mmd2": 3635.078001312697,
+      "precision": 0.7157500000000001,
+      "recall": 0.555125
+    },
+    "per_class": [
+      {
+        "digit": 0,
+        "accuracy": 0.90125,
+        "mmd2": 2294.6198640406656,
+        "precision": 0.6775,
+        "recall": 0.66375
+      },
+      {
+        "digit": 1,
+        "accuracy": 0.94125,
+        "mmd2": 127.89977056815019,
+        "precision": 0.5875,
+        "recall": 0.655
+      },
+      {
+        "digit": 2,
+        "accuracy": 0.8475,
+        "mmd2": 5673.54837457153,
+        "precision": 0.81125,
+        "recall": 0.38875
+      },
+      {
+        "digit": 3,
+        "accuracy": 0.94,
+        "mmd2": 6024.881692772062,
+        "precision": 0.725,
+        "recall": 0.58125
+      },
+      {
+        "digit": 4,
+        "accuracy": 0.95,
+        "mmd2": 2316.3336798187484,
+        "precision": 0.7475,
+        "recall": 0.55375
+      },
+      {
+        "digit": 5,
+        "accuracy": 0.8625,
+        "mmd2": 9624.775982654854,
+        "precision": 0.83125,
+        "recall": 0.49375
+      },
+      {
+        "digit": 6,
+        "accuracy": 0.895,
+        "mmd2": 2767.2160878931154,
+        "precision": 0.68625,
+        "recall": 0.53875
+      },
+      {
+        "digit": 7,
+        "accuracy": 0.92625,
+        "mmd2": 1697.6881581864754,
+        "precision": 0.64375,
+        "recall": 0.63625
+      },
+      {
+        "digit": 8,
+        "accuracy": 0.795,
+        "mmd2": 2644.793295638143,
+        "precision": 0.74875,
+        "recall": 0.43375
+      },
+      {
+        "digit": 9,
+        "accuracy": 0.835,
+        "mmd2": 3179.023106983226,
+        "precision": 0.69875,
+        "recall": 0.60625
+      }
+    ],
+    "confusion": [
+      [
+        721,
+        0,
+        16,
+        18,
+        0,
+        10,
+        8,
+        8,
+        9,
+        10
+      ],
+      [
+        0,
+        753,
+        7,
+        11,
+        2,
+        0,
+        0,
+        17,
+        8,
+        2
+      ],
+      [
+        8,
+        5,
+        678,
+        64,
+        3,
+        1,
+        8,
+        18,
+        9,
+        6
+      ],
+      [
+        2,
+        2,
+        7,
+        752,
+        1,
+        15,
+        1,
+        4,
+        3,
+        13
+      ],
+      [
+        1,
+        5,
+        0,
+        2,
+        760,
+        0,
+        1,
+        11,
+        0,
+        20
+      ],
+      [
+        9,
+        1,
+        1,
+        57,
+        3,
+        690,
+        12,
+        2,
+        10,
+        15
+      ],
+      [
+        20,
+        1,
+        13,
+        2,
+        9,
+        16,
+        716,
+        0,
+        21,
+        2
+      ],
+      [
+        2,
+        5,
+        10,
+        28,
+        3,
+        1,
+        0,
+        741,
+        0,
+        10
+      ],
+      [
+        6,
+        3,
+        37,
+        65,
+        1,
+        16,
+        7,
+        2,
+        636,
+        27
+      ],
+      [
+        2,
+        4,
+        3,
+        27,
+        8,
+        3,
+        1,
+        61,
+        23,
+        668
+      ]
+    ],
+    "variant": "VAE20",
+    "model": "vae",
+    "epoch": 20,
+    "seed": 44,
+    "train_seconds": 25.992640973999187,
+    "parameters_total": 289785,
+    "parameters_generate": 130529,
+    "checkpoint_sha256": "bb3373bbbc85dcdc3c0072262c2ad0223c79b1710512c01c3adeb867227ea8b2",
+    "generation_benchmark": {
+      "seconds_median": 0.029690754000057495,
+      "images_per_second": 336805.1885775833,
+      "repeats_seconds": [
+        0.029690754000057495,
+        0.032437561999813624,
+        0.029883472999699734,
+        0.028795672999876842,
+        0.029119787000126962
+      ],
+      "images": 10000,
+      "batch_size": 128,
+      "scope": "forward only; latent and labels already on GPU; excludes transfer, RNG, postprocessing, evaluator and PNG writing"
+    },
+    "samples_per_class": 800,
+    "reference_split": "test"
+  },
+  {
+    "macro": {
+      "accuracy": 0.999375,
+      "mmd2": 572.4323509009307,
+      "precision": 0.73475,
+      "recall": 0.42037500000000005
+    },
+    "per_class": [
+      {
+        "digit": 0,
+        "accuracy": 1.0,
+        "mmd2": 83.42940357194675,
+        "precision": 0.84,
+        "recall": 0.56125
+      },
+      {
+        "digit": 1,
+        "accuracy": 1.0,
+        "mmd2": 12.835041141785496,
+        "precision": 0.6375,
+        "recall": 0.52375
+      },
+      {
+        "digit": 2,
+        "accuracy": 1.0,
+        "mmd2": 2321.621368821703,
+        "precision": 0.615,
+        "recall": 0.395
+      },
+      {
+        "digit": 3,
+        "accuracy": 1.0,
+        "mmd2": 901.8491077314102,
+        "precision": 0.71875,
+        "recall": 0.3675
+      },
+      {
+        "digit": 4,
+        "accuracy": 1.0,
+        "mmd2": 991.7041948628139,
+        "precision": 0.72625,
+        "recall": 0.42625
+      },
+      {
+        "digit": 5,
+        "accuracy": 1.0,
+        "mmd2": 530.0102589762173,
+        "precision": 0.75625,
+        "recall": 0.32125
+      },
+      {
+        "digit": 6,
+        "accuracy": 1.0,
+        "mmd2": 129.77130456069244,
+        "precision": 0.7375,
+        "recall": 0.4025
+      },
+      {
+        "digit": 7,
+        "accuracy": 0.995,
+        "mmd2": 284.8629959529844,
+        "precision": 0.70625,
+        "recall": 0.4275
+      },
+      {
+        "digit": 8,
+        "accuracy": 1.0,
+        "mmd2": 387.8878000087316,
+        "precision": 0.80875,
+        "recall": 0.29
+      },
+      {
+        "digit": 9,
+        "accuracy": 0.99875,
+        "mmd2": 80.35203338102292,
+        "precision": 0.80125,
+        "recall": 0.48875
+      }
+    ],
+    "confusion": [
+      [
+        800,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        800,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        800,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        800,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        800,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        800,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        800,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        796,
+        0,
+        3
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        800,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        799
+      ]
+    ],
+    "variant": "GAN20",
+    "model": "gan",
+    "epoch": 20,
+    "seed": 42,
+    "train_seconds": 61.55807261099926,
+    "parameters_total": 725782,
+    "parameters_generate": 578357,
+    "checkpoint_sha256": "12d2edfe1c81457a91699134cf9c204568b0f173f5cb6f7978e67f64b63a2899",
+    "generation_benchmark": {
+      "seconds_median": 0.03917501000023549,
+      "images_per_second": 255264.7721070113,
+      "repeats_seconds": [
+        0.08621689600022364,
+        0.038414021999869874,
+        0.03944253400004527,
+        0.03917501000023549,
+        0.03872634800018204
+      ],
+      "images": 10000,
+      "batch_size": 128,
+      "scope": "forward only; latent and labels already on GPU; excludes transfer, RNG, postprocessing, evaluator and PNG writing"
+    },
+    "samples_per_class": 800,
+    "reference_split": "test"
+  },
+  {
+    "macro": {
+      "accuracy": 0.999,
+      "mmd2": 385.2403974406197,
+      "precision": 0.733125,
+      "recall": 0.461625
+    },
+    "per_class": [
+      {
+        "digit": 0,
+        "accuracy": 1.0,
+        "mmd2": 260.7576142142425,
+        "precision": 0.7775,
+        "recall": 0.57375
+      },
+      {
+        "digit": 1,
+        "accuracy": 1.0,
+        "mmd2": 7.468642456274665,
+        "precision": 0.67,
+        "recall": 0.55125
+      },
+      {
+        "digit": 2,
+        "accuracy": 0.99875,
+        "mmd2": 553.1019479983952,
+        "precision": 0.72625,
+        "recall": 0.41625
+      },
+      {
+        "digit": 3,
+        "accuracy": 1.0,
+        "mmd2": 552.0033644755677,
+        "precision": 0.72,
+        "recall": 0.42
+      },
+      {
+        "digit": 4,
+        "accuracy": 1.0,
+        "mmd2": 832.9542307472038,
+        "precision": 0.63,
+        "recall": 0.49375
+      },
+      {
+        "digit": 5,
+        "accuracy": 1.0,
+        "mmd2": 491.3291969323109,
+        "precision": 0.71625,
+        "recall": 0.3775
+      },
+      {
+        "digit": 6,
+        "accuracy": 0.99875,
+        "mmd2": 188.70097756813448,
+        "precision": 0.74375,
+        "recall": 0.4925
+      },
+      {
+        "digit": 7,
+        "accuracy": 1.0,
+        "mmd2": 160.24378794433142,
+        "precision": 0.75,
+        "recall": 0.45375
+      },
+      {
+        "digit": 8,
+        "accuracy": 0.99875,
+        "mmd2": 610.5754103127547,
+        "precision": 0.81625,
+        "recall": 0.325
+      },
+      {
+        "digit": 9,
+        "accuracy": 0.99375,
+        "mmd2": 195.2688017569817,
+        "precision": 0.78125,
+        "recall": 0.5125
+      }
+    ],
+    "confusion": [
+      [
+        800,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        800,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        799,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        800,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        800,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        800,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        799,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        800,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        799,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        3,
+        1,
+        0,
+        0,
+        1,
+        0,
+        795
+      ]
+    ],
+    "variant": "GAN20",
+    "model": "gan",
+    "epoch": 20,
+    "seed": 43,
+    "train_seconds": 60.90665389300011,
+    "parameters_total": 725782,
+    "parameters_generate": 578357,
+    "checkpoint_sha256": "1177ba879b16b6eaa418f52cee183a918eb52d0cbe4e98a0de6e3dfffbd3c551",
+    "generation_benchmark": {
+      "seconds_median": 0.03879640900004233,
+      "images_per_second": 257755.8144618253,
+      "repeats_seconds": [
+        0.03852845700021135,
+        0.03879640900004233,
+        0.03870825000012701,
+        0.0391146930001014,
+        0.03909195899996121
+      ],
+      "images": 10000,
+      "batch_size": 128,
+      "scope": "forward only; latent and labels already on GPU; excludes transfer, RNG, postprocessing, evaluator and PNG writing"
+    },
+    "samples_per_class": 800,
+    "reference_split": "test"
+  },
+  {
+    "macro": {
+      "accuracy": 0.999125,
+      "mmd2": 370.7072453063568,
+      "precision": 0.751625,
+      "recall": 0.421
+    },
+    "per_class": [
+      {
+        "digit": 0,
+        "accuracy": 1.0,
+        "mmd2": 109.41026973552653,
+        "precision": 0.79375,
+        "recall": 0.5675
+      },
+      {
+        "digit": 1,
+        "accuracy": 1.0,
+        "mmd2": 5.610815443219508,
+        "precision": 0.6275,
+        "recall": 0.47875
+      },
+      {
+        "digit": 2,
+        "accuracy": 0.9975,
+        "mmd2": 967.6046503191901,
+        "precision": 0.7325,
+        "recall": 0.38
+      },
+      {
+        "digit": 3,
+        "accuracy": 1.0,
+        "mmd2": 242.04642442122713,
+        "precision": 0.79625,
+        "recall": 0.37625
+      },
+      {
+        "digit": 4,
+        "accuracy": 1.0,
+        "mmd2": 516.6443079148266,
+        "precision": 0.715,
+        "recall": 0.3575
+      },
+      {
+        "digit": 5,
+        "accuracy": 0.9975,
+        "mmd2": 615.3174136770831,
+        "precision": 0.70625,
+        "recall": 0.35
+      },
+      {
+        "digit": 6,
+        "accuracy": 1.0,
+        "mmd2": 290.0799199576177,
+        "precision": 0.78,
+        "recall": 0.47375
+      },
+      {
+        "digit": 7,
+        "accuracy": 0.99875,
+        "mmd2": 119.1132850820577,
+        "precision": 0.7325,
+        "recall": 0.4675
+      },
+      {
+        "digit": 8,
+        "accuracy": 1.0,
+        "mmd2": 689.4917724786465,
+        "precision": 0.825,
+        "recall": 0.31125
+      },
+      {
+        "digit": 9,
+        "accuracy": 0.9975,
+        "mmd2": 151.75359403417315,
+        "precision": 0.8075,
+        "recall": 0.4475
+      }
+    ],
+    "confusion": [
+      [
+        800,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        800,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        798,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        800,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        800,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        798,
+        2,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        800,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        799,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        800,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        798
+      ]
+    ],
+    "variant": "GAN20",
+    "model": "gan",
+    "epoch": 20,
+    "seed": 44,
+    "train_seconds": 60.41600489399889,
+    "parameters_total": 725782,
+    "parameters_generate": 578357,
+    "checkpoint_sha256": "797fce1aec3389a85ace57814f56c65dadcf99469247cdb887472bad6f8cbcd6",
+    "generation_benchmark": {
+      "seconds_median": 0.03870727100002114,
+      "images_per_second": 258349.3938385514,
+      "repeats_seconds": [
+        0.03847171500001423,
+        0.03870727100002114,
+        0.03885493400002815,
+        0.038688696999997774,
+        0.03878255400013586
+      ],
+      "images": 10000,
+      "batch_size": 128,
+      "scope": "forward only; latent and labels already on GPU; excludes transfer, RNG, postprocessing, evaluator and PNG writing"
+    },
+    "samples_per_class": 800,
+    "reference_split": "test"
+  },
+  {
+    "macro": {
+      "accuracy": 0.99925,
+      "mmd2": 216.9641680270841,
+      "precision": 0.809375,
+      "recall": 0.505125
+    },
+    "per_class": [
+      {
+        "digit": 0,
+        "accuracy": 0.99875,
+        "mmd2": 78.3559808543614,
+        "precision": 0.825,
+        "recall": 0.6175
+      },
+      {
+        "digit": 1,
+        "accuracy": 1.0,
+        "mmd2": 13.921789433070444,
+        "precision": 0.7225,
+        "recall": 0.65375
+      },
+      {
+        "digit": 2,
+        "accuracy": 1.0,
+        "mmd2": 629.1593432344525,
+        "precision": 0.7625,
+        "recall": 0.48375
+      },
+      {
+        "digit": 3,
+        "accuracy": 1.0,
+        "mmd2": 420.6066241614535,
+        "precision": 0.79375,
+        "recall": 0.40625
+      },
+      {
+        "digit": 4,
+        "accuracy": 1.0,
+        "mmd2": 214.32337399290918,
+        "precision": 0.82625,
+        "recall": 0.47125
+      },
+      {
+        "digit": 5,
+        "accuracy": 0.99875,
+        "mmd2": 243.29780533341545,
+        "precision": 0.81125,
+        "recall": 0.44875
+      },
+      {
+        "digit": 6,
+        "accuracy": 1.0,
+        "mmd2": 88.98662844010505,
+        "precision": 0.86125,
+        "recall": 0.51875
+      },
+      {
+        "digit": 7,
+        "accuracy": 0.99875,
+        "mmd2": 61.99707580085669,
+        "precision": 0.805,
+        "recall": 0.565
+      },
+      {
+        "digit": 8,
+        "accuracy": 0.9975,
+        "mmd2": 324.5379976095792,
+        "precision": 0.84875,
+        "recall": 0.39
+      },
+      {
+        "digit": 9,
+        "accuracy": 0.99875,
+        "mmd2": 94.45506141063743,
+        "precision": 0.8375,
+        "recall": 0.49625
+      }
+    ],
+    "confusion": [
+      [
+        799,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        800,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        800,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        800,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        800,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        1,
+        0,
+        799,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        800,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        799,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        798,
+        1
+      ],
+      [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        799
+      ]
+    ],
+    "variant": "GAN50",
+    "model": "gan",
+    "epoch": 50,
+    "seed": 42,
+    "train_seconds": 153.39464924100002,
+    "parameters_total": 725782,
+    "parameters_generate": 578357,
+    "checkpoint_sha256": "3082d182b65503b454c332a263a1b0e6799fe27f2f79528fc0507efbbe0db114",
+    "generation_benchmark": {
+      "seconds_median": 0.03882179599986557,
+      "images_per_second": 257587.25845745587,
+      "repeats_seconds": [
+        0.03870625299987296,
+        0.03882179599986557,
+        0.03852252399974532,
+        0.038898190000054456,
+        0.03928559300038614
+      ],
+      "images": 10000,
+      "batch_size": 128,
+      "scope": "forward only; latent and labels already on GPU; excludes transfer, RNG, postprocessing, evaluator and PNG writing"
+    },
+    "samples_per_class": 800,
+    "reference_split": "test"
+  },
+  {
+    "macro": {
+      "accuracy": 0.9995,
+      "mmd2": 278.29519330381,
+      "precision": 0.818,
+      "recall": 0.55575
+    },
+    "per_class": [
+      {
+        "digit": 0,
+        "accuracy": 1.0,
+        "mmd2": 100.38789464561341,
+        "precision": 0.84875,
+        "recall": 0.65875
+      },
+      {
+        "digit": 1,
+        "accuracy": 0.99875,
+        "mmd2": 17.63429602067572,
+        "precision": 0.70375,
+        "recall": 0.67375
+      },
+      {
+        "digit": 2,
+        "accuracy": 0.99875,
+        "mmd2": 850.123060007536,
+        "precision": 0.74875,
+        "recall": 0.59
+      },
+      {
+        "digit": 3,
+        "accuracy": 1.0,
+        "mmd2": 291.21787145085545,
+        "precision": 0.84125,
+        "recall": 0.52
+      },
+      {
+        "digit": 4,
+        "accuracy": 0.99875,
+        "mmd2": 400.15017887197973,
+        "precision": 0.82875,
+        "recall": 0.55375
+      },
+      {
+        "digit": 5,
+        "accuracy": 1.0,
+        "mmd2": 581.0305519178874,
+        "precision": 0.7975,
+        "recall": 0.495
+      },
+      {
+        "digit": 6,
+        "accuracy": 1.0,
+        "mmd2": 192.32996721273412,
+        "precision": 0.83875,
+        "recall": 0.5675
+      },
+      {
+        "digit": 7,
+        "accuracy": 0.99875,
+        "mmd2": 65.43843837564782,
+        "precision": 0.815,
+        "recall": 0.56
+      },
+      {
+        "digit": 8,
+        "accuracy": 1.0,
+        "mmd2": 230.1825127615266,
+        "precision": 0.8925,
+        "recall": 0.3775
+      },
+      {
+        "digit": 9,
+        "accuracy": 1.0,
+        "mmd2": 54.45716177364375,
+        "precision": 0.865,
+        "recall": 0.56125
+      }
+    ],
+    "confusion": [
+      [
+        800,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        799,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        799,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        800,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        0,
+        799,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        800,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        800,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        799,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        800,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        800
+      ]
+    ],
+    "variant": "GAN50",
+    "model": "gan",
+    "epoch": 50,
+    "seed": 43,
+    "train_seconds": 152.2186046199995,
+    "parameters_total": 725782,
+    "parameters_generate": 578357,
+    "checkpoint_sha256": "e43c87c99cd956ad41b305cd802c6a6ef0ce05329b4f7832b3492fafe96f6590",
+    "generation_benchmark": {
+      "seconds_median": 0.0388912309999796,
+      "images_per_second": 257127.37146338326,
+      "repeats_seconds": [
+        0.039163654999811115,
+        0.0388912309999796,
+        0.0390051150002364,
+        0.03880297800014887,
+        0.03867005300025994
+      ],
+      "images": 10000,
+      "batch_size": 128,
+      "scope": "forward only; latent and labels already on GPU; excludes transfer, RNG, postprocessing, evaluator and PNG writing"
+    },
+    "samples_per_class": 800,
+    "reference_split": "test"
+  },
+  {
+    "macro": {
+      "accuracy": 0.999375,
+      "mmd2": 406.6996723807734,
+      "precision": 0.7955,
+      "recall": 0.46975
+    },
+    "per_class": [
+      {
+        "digit": 0,
+        "accuracy": 1.0,
+        "mmd2": 207.14516383222872,
+        "precision": 0.84625,
+        "recall": 0.58
+      },
+      {
+        "digit": 1,
+        "accuracy": 0.99875,
+        "mmd2": 15.494971391499803,
+        "precision": 0.695,
+        "recall": 0.67
+      },
+      {
+        "digit": 2,
+        "accuracy": 0.9975,
+        "mmd2": 953.5320891064694,
+        "precision": 0.77375,
+        "recall": 0.455
+      },
+      {
+        "digit": 3,
+        "accuracy": 1.0,
+        "mmd2": 663.3007268038273,
+        "precision": 0.76,
+        "recall": 0.415
+      },
+      {
+        "digit": 4,
+        "accuracy": 1.0,
+        "mmd2": 256.97751272359164,
+        "precision": 0.7475,
+        "recall": 0.425
+      },
+      {
+        "digit": 5,
+        "accuracy": 0.9975,
+        "mmd2": 965.2447643505002,
+        "precision": 0.79,
+        "recall": 0.43625
+      },
+      {
+        "digit": 6,
+        "accuracy": 1.0,
+        "mmd2": 167.0174738304995,
+        "precision": 0.8475,
+        "recall": 0.4775
+      },
+      {
+        "digit": 7,
+        "accuracy": 1.0,
+        "mmd2": 147.1310635281643,
+        "precision": 0.73875,
+        "recall": 0.50875
+      },
+      {
+        "digit": 8,
+        "accuracy": 1.0,
+        "mmd2": 511.5551835696024,
+        "precision": 0.90375,
+        "recall": 0.28
+      },
+      {
+        "digit": 9,
+        "accuracy": 1.0,
+        "mmd2": 179.59777467135063,
+        "precision": 0.8525,
+        "recall": 0.45
+      }
+    ],
+    "confusion": [
+      [
+        800,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        799,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        798,
+        0,
+        0,
+        0,
+        0,
+        2,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        800,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        800,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        2,
+        0,
+        798,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        800,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        800,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        800,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        800
+      ]
+    ],
+    "variant": "GAN50",
+    "model": "gan",
+    "epoch": 50,
+    "seed": 44,
+    "train_seconds": 150.67982492199644,
+    "parameters_total": 725782,
+    "parameters_generate": 578357,
+    "checkpoint_sha256": "d4a810db165992b064648119bce78a357217772c9846e275ed41166ba023b4a8",
+    "generation_benchmark": {
+      "seconds_median": 0.03875617199992121,
+      "images_per_second": 258023.41882527331,
+      "repeats_seconds": [
+        0.03833244999987073,
+        0.03857973699996364,
+        0.03875617199992121,
+        0.038818635000097856,
+        0.038871732000188786
+      ],
+      "images": 10000,
+      "batch_size": 128,
+      "scope": "forward only; latent and labels already on GPU; excludes transfer, RNG, postprocessing, evaluator and PNG writing"
+    },
+    "samples_per_class": 800,
+    "reference_split": "test"
+  }
+]

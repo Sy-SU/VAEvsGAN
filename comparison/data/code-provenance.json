@@ -1,0 +1,11 @@
+{
+  "training_source_sha256": "24d678a586a99a69aa54fb496b7b3d4474c513a9bd7beb53ee939b2adf04d284",
+  "final_source_sha256": "24cb9f098b8735b34fa51e12fefa3e7288729a80dc26a799cc297bcc341c0752",
+  "training_source_verified_against_recorded_hash": true,
+  "changes": [
+    "Remove unused import copy",
+    "Allow stage=report to use CPU without resolving configured CUDA device"
+  ],
+  "training_behavior_changed": false,
+  "note": "Training snapshot reconstructed by reversing the two known edits and verified byte-for-byte by the SHA-256 recorded when formal training started. Existing environment.json is preserved."
+}

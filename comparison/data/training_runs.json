@@ -1,0 +1,101 @@
+{
+  "vae_seed_42": {
+    "config_fingerprint": "e7547160adfddee04f4720db72e2daae8c955c2fe2fc11480d14fae40e9aeba0",
+    "epochs": 20,
+    "train_seconds": 26.154928002001043,
+    "wall_seconds": 26.419497398999965,
+    "parameters_total": 289785,
+    "parameters_generate": 130529,
+    "checkpoints": {
+      "epoch_001.pt": "ca70121ffcb76bdbb608fab7f285000a998140b8b462ce03bd8f5151ba163278",
+      "epoch_005.pt": "738e67480d4f0e5cdc5fb347b59f854ca6befc4cebca0fa03be187519abadd8f",
+      "epoch_020.pt": "136704f2eb6a11a5e208e587010d99d92ddc9b550c7f463db06c81bbdaba100a",
+      "epoch_015.pt": "9a96b9761db272c29dcb7440f2a71a41e16fa5effcd910a03c0f41a12090497f",
+      "epoch_010.pt": "b56a0ce98def6ca1103f699bedae10c6150d4448b3c2e862084f20f5fcf2df0e"
+    }
+  },
+  "vae_seed_43": {
+    "config_fingerprint": "e7547160adfddee04f4720db72e2daae8c955c2fe2fc11480d14fae40e9aeba0",
+    "epochs": 20,
+    "train_seconds": 26.203906741000083,
+    "wall_seconds": 26.453770976000214,
+    "parameters_total": 289785,
+    "parameters_generate": 130529,
+    "checkpoints": {
+      "epoch_001.pt": "7df297d5c98e64de7616eef52b41b0231597d0bf242d736cab003af3236433cf",
+      "epoch_005.pt": "82f8c68c7d2590ee61c05330dd2cecd563705acb73885ebf8cab63510aafb461",
+      "epoch_020.pt": "212d4332b214cab12b2f8e7aceac62ce27189666ab25e5ed993730e39781f6f8",
+      "epoch_015.pt": "f24135719d4f8072e1cd9ef62bf38b51d573f571c51a0959925cc2a28f138006",
+      "epoch_010.pt": "33b1964c98c59f26ce1078c2fbe53b9d1511fc1f915c33c8d1a0e374128b00e1"
+    }
+  },
+  "vae_seed_44": {
+    "config_fingerprint": "e7547160adfddee04f4720db72e2daae8c955c2fe2fc11480d14fae40e9aeba0",
+    "epochs": 20,
+    "train_seconds": 25.992640973999187,
+    "wall_seconds": 26.244299660999786,
+    "parameters_total": 289785,
+    "parameters_generate": 130529,
+    "checkpoints": {
+      "epoch_001.pt": "8da20556c35b6229f2461e84e9f4a7ef998ffdda4cab42f5ffada38def6466ba",
+      "epoch_005.pt": "fe0c1329f04e4e31524720200570cdaba6e0f201e20d6123ce4bd958ec7a22ac",
+      "epoch_020.pt": "bb3373bbbc85dcdc3c0072262c2ad0223c79b1710512c01c3adeb867227ea8b2",
+      "epoch_015.pt": "c7e20c008811abaf3c1baa357e3bd59f0fadc6c464dfe5a02e672b42a7208f5a",
+      "epoch_010.pt": "d4b613a1f11807c8f09dc4e11ed13cf35305a5eba4d0469f93afbcf981b97838"
+    }
+  },
+  "gan_seed_42": {
+    "config_fingerprint": "e7547160adfddee04f4720db72e2daae8c955c2fe2fc11480d14fae40e9aeba0",
+    "epochs": 50,
+    "train_seconds": 153.39464924100002,
+    "wall_seconds": 154.25556214900007,
+    "parameters_total": 725782,
+    "parameters_generate": 578357,
+    "checkpoints": {
+      "epoch_001.pt": "cf4d6cf1111364fcce94c124ee9069efeac5c2aafc2495cb76cabee01eb908f7",
+      "epoch_050.pt": "3082d182b65503b454c332a263a1b0e6799fe27f2f79528fc0507efbbe0db114",
+      "epoch_005.pt": "ffc4ead072b799830f2d9ce083586b14ac240b3e77effbc40adc43f6ddff11e2",
+      "epoch_040.pt": "31f889aa3715306393798b01e1b4749e21a2327ffbe3f09d65f40df2b56eb911",
+      "epoch_020.pt": "12d2edfe1c81457a91699134cf9c204568b0f173f5cb6f7978e67f64b63a2899",
+      "epoch_030.pt": "9760a844be325ab8eda5ef3a06faeb746ddff63e2204ef132d4f7707d57944ba",
+      "epoch_015.pt": "19ed01bf889b1dae20a87e49896e57b7267d1ec67907a2da1127d33adfd45d21",
+      "epoch_010.pt": "9994cccc21b7ddb3ed01b70e4df35eef0ab379e4b0c6de67bd5b0bcd62ddc6a9"
+    }
+  },
+  "gan_seed_43": {
+    "config_fingerprint": "e7547160adfddee04f4720db72e2daae8c955c2fe2fc11480d14fae40e9aeba0",
+    "epochs": 50,
+    "train_seconds": 152.2186046199995,
+    "wall_seconds": 153.04913926900008,
+    "parameters_total": 725782,
+    "parameters_generate": 578357,
+    "checkpoints": {
+      "epoch_001.pt": "e9ef761eccbb763eb266e30265d69b8135a6342d86fd4c3c3825ff39e7de4925",
+      "epoch_050.pt": "e43c87c99cd956ad41b305cd802c6a6ef0ce05329b4f7832b3492fafe96f6590",
+      "epoch_005.pt": "a0baff0d8fb3a056c1691fe5f9180d3161a7339411eb4e7ae24ceebb1a233c1c",
+      "epoch_040.pt": "e1b8f17f8d24cf7b672b4a968fb84395bb61bbe080291a73ee5468789d3a431b",
+      "epoch_020.pt": "1177ba879b16b6eaa418f52cee183a918eb52d0cbe4e98a0de6e3dfffbd3c551",
+      "epoch_030.pt": "bba5b88fa55bce5dee4362a7f0b5a2189bf0ab277eef43fdf6fb2b7b78ef9067",
+      "epoch_015.pt": "b380b9285dff0383b14066eeb176d6f7d07bd842bbc771dbf6d1767383c244fb",
+      "epoch_010.pt": "50a6adb2d1b28f779197024746cd2f870893a7fcea6efa3e3769634d3f32dba1"
+    }
+  },
+  "gan_seed_44": {
+    "config_fingerprint": "e7547160adfddee04f4720db72e2daae8c955c2fe2fc11480d14fae40e9aeba0",
+    "epochs": 50,
+    "train_seconds": 150.67982492199644,
+    "wall_seconds": 151.48124997500008,
+    "parameters_total": 725782,
+    "parameters_generate": 578357,
+    "checkpoints": {
+      "epoch_001.pt": "ee023ba68ebf215efb1bba406680c6bd530747ffb88cdb1598a376494eb0f204",
+      "epoch_050.pt": "d4a810db165992b064648119bce78a357217772c9846e275ed41166ba023b4a8",
+      "epoch_005.pt": "73cc9f7384b997cf1cb8ecaf12efcb4b5e58c22bed59d1ecae3bb2ba794ba661",
+      "epoch_040.pt": "9113cf4dbe28bceb8356e69e6398336242e8d554ed7408f2bdd0d005d394a212",
+      "epoch_020.pt": "797fce1aec3389a85ace57814f56c65dadcf99469247cdb887472bad6f8cbcd6",
+      "epoch_030.pt": "9818293d003885367fa2f2b34a06f489354ee681eed638047f415fcf01ce6452",
+      "epoch_015.pt": "bb204c99729a3d271f41d72512667c0a4d28ff6727e48fb647dcbb6b235bb525",
+      "epoch_010.pt": "c0af3a0146eff20c17415472cbe444595c2a220b37a429ac8253d8253561f346"
+    }
+  }
+}
